@@ -8,47 +8,72 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ onSelectAction }) => {
   const { content } = useSiteContent();
-  const videoForwardRef = useRef<HTMLVideoElement | null>(null);
-  const videoReverseRef = useRef<HTMLVideoElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [activeDirection, setActiveDirection] = useState<'forward' | 'reverse'>('forward');
+  const stateRef = useRef<{
+    phase: 'forward' | 'reverse';
+    reachedReverseBody: boolean;
+  }>({
+    phase: 'forward',
+    reachedReverseBody: false,
+  });
 
   useEffect(() => {
-    const video = videoForwardRef.current;
-    if (video) {
-      video.muted = true;
-      video.playsInline = true;
-      video.play().catch(() => {
-        setIsPlaying(false);
-      });
-    }
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = true;
+    video.playsInline = true;
+    video.loop = true;
+
+    let animId: number;
+    const checkFrame = () => {
+      if (video && !video.paused) {
+        const t = video.currentTime;
+        const state = stateRef.current;
+
+        if (state.phase === 'forward') {
+          if (t >= 3.82 && t < 7.0) {
+            video.pause();
+            setIsPlaying(false);
+            state.phase = 'reverse';
+            state.reachedReverseBody = false;
+          }
+        } else if (state.phase === 'reverse') {
+          if (t >= 4.0) {
+            state.reachedReverseBody = true;
+          }
+          if (state.reachedReverseBody && (t >= 7.64 || t < 1.0)) {
+            video.pause();
+            video.currentTime = 0;
+            setIsPlaying(false);
+            state.phase = 'forward';
+            state.reachedReverseBody = false;
+          }
+        }
+      }
+      animId = requestAnimationFrame(checkFrame);
+    };
+
+    animId = requestAnimationFrame(checkFrame);
+
+    video.play().catch(() => {
+      setIsPlaying(false);
+    });
+
+    return () => {
+      cancelAnimationFrame(animId);
+    };
   }, []);
 
-  const handleForwardEnded = () => {
-    setIsPlaying(false);
-    if (videoReverseRef.current) {
-      videoReverseRef.current.currentTime = 0;
-    }
-    setActiveDirection('reverse');
-  };
-
-  const handleReverseEnded = () => {
-    setIsPlaying(false);
-    if (videoForwardRef.current) {
-      videoForwardRef.current.currentTime = 0;
-    }
-    setActiveDirection('forward');
-  };
-
   const toggleVideoPlay = () => {
-    const currentVideo =
-      activeDirection === 'forward' ? videoForwardRef.current : videoReverseRef.current;
-    if (!currentVideo) return;
+    const video = videoRef.current;
+    if (!video) return;
 
-    if (currentVideo.paused) {
-      currentVideo.play().then(() => setIsPlaying(true)).catch(() => {});
+    if (video.paused) {
+      video.play().then(() => setIsPlaying(true)).catch(() => {});
     } else {
-      currentVideo.pause();
+      video.pause();
       setIsPlaying(false);
     }
   };
@@ -115,41 +140,24 @@ export const Hero: React.FC<HeroProps> = ({ onSelectAction }) => {
         {/* 6. MEDIA CARD (Displayed BELOW text & actions on mobile, beside on desktop) */}
         <div className="lg:col-span-5 mt-2 sm:mt-4 lg:mt-0">
           <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 bg-[#0d0f14] shadow-xl sm:shadow-2xl aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3] group">
-            {/* Forward Video */}
+            {/* Embedded seamless video */}
             <video
-              ref={videoForwardRef}
-              src="/hero-video.mp4"
-              className={`absolute inset-0 w-full h-full object-cover ${
-                activeDirection === 'forward' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
-              }`}
+              ref={videoRef}
+              src="/hero-video-combined.mp4"
+              className="w-full h-full object-cover"
               muted
               playsInline
+              loop
               preload="auto"
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
-              onEnded={handleForwardEnded}
-            />
-
-            {/* Reverse Video */}
-            <video
-              ref={videoReverseRef}
-              src="/hero-video-reverse.mp4"
-              className={`absolute inset-0 w-full h-full object-cover ${
-                activeDirection === 'reverse' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
-              }`}
-              muted
-              playsInline
-              preload="auto"
-              onPlay={() => setIsPlaying(true)}
-              onPause={() => setIsPlaying(false)}
-              onEnded={handleReverseEnded}
             />
 
             {/* Gradient vignette */}
-            <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-black/20 to-black/30 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30 pointer-events-none" />
 
             {/* Top Bar inside media card */}
-            <div className="absolute top-3 left-3 right-3 sm:top-4 sm:left-4 sm:right-4 z-30 flex items-center justify-between text-xs">
+            <div className="absolute top-3 left-3 right-3 sm:top-4 sm:left-4 sm:right-4 flex items-center justify-between text-xs">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-white/90">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 <span className="text-[11px] sm:text-xs">Atelier mécanique</span>
