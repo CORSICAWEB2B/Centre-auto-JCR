@@ -243,41 +243,46 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
           </div>
 
           <span
-            className="text-[13px] sm:text-[14px] font-medium tracking-tight"
+            className="text-[13px] sm:text-[14px] font-medium tracking-tight flex items-center gap-2"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
-            {isOpen ? 'Fermer l’assistant' : 'Assistant JCR'}
+            <span>{isOpen ? 'Fermer l’assistant' : 'Assistant JCR'}</span>
+            {!isOpen && (
+              <span className="relative flex h-2 w-2 items-center justify-center" title="Connecté • En ligne">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]" />
+              </span>
+            )}
           </span>
-
-          {!isOpen && (
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 hidden sm:inline-block" title="En ligne" />
-          )}
         </button>
       </div>
 
-      {/* CHAT WINDOW / MODAL */}
+      {/* CHAT WINDOW / MODAL (Compact & streamlined) */}
       {isOpen && (
         <div
           role="dialog"
           aria-label="Assistant virtuel Centre Auto JCR"
-          className="fixed bottom-18 right-4 z-40 w-[calc(100vw-32px)] sm:w-[420px] max-w-[440px] h-[580px] max-h-[calc(100vh-100px)] bg-[#0d0f12] border border-white/20 rounded-2xl shadow-2xl flex flex-col overflow-hidden text-white backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-200"
+          className="fixed bottom-16 right-4 z-40 w-[calc(100vw-32px)] sm:w-[320px] max-w-[340px] h-[440px] max-h-[calc(100vh-90px)] bg-[#0d0f12] border border-white/20 rounded-2xl shadow-2xl flex flex-col overflow-hidden text-white backdrop-blur-xl animate-in fade-in slide-in-from-bottom-3 duration-200"
           style={{ fontFamily: 'var(--font-body)' }}
         >
           {/* HEADER */}
-          <div className="p-4 border-b border-white/10 bg-black/40 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-[16px] select-none">
+          <div className="p-2.5 px-3.5 border-b border-white/10 bg-black/40 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white text-[14px] select-none">
                 ✳︎
               </div>
               <div>
                 <h3
-                  className="text-[15px] font-medium leading-tight text-white flex items-center gap-2"
+                  className="text-[13.5px] font-medium leading-tight text-white flex items-center gap-1.5"
                   style={{ fontFamily: 'var(--font-heading)' }}
                 >
-                  Assistant Centre Auto JCR
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  Assistant JCR
+                  <span className="relative flex h-2 w-2 items-center justify-center" title="Connecté • En ligne">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]" />
+                  </span>
                 </h3>
-                <p className="text-[12px] text-white/50">Atelier mécanique • Bastia (Furiani)</p>
+                <p className="text-[11px] text-white/50">Atelier Bastia (Furiani)</p>
               </div>
             </div>
 
@@ -285,7 +290,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
               <button
                 type="button"
                 onClick={handleResetChat}
-                className="text-white/40 hover:text-white p-1.5 rounded transition-colors text-[13px]"
+                className="text-white/40 hover:text-white p-1 rounded transition-colors text-[12px]"
                 title="Effacer l’historique"
               >
                 ↺
@@ -293,7 +298,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
               <button
                 type="button"
                 onClick={toggleOpen}
-                className="text-white/50 hover:text-white p-1.5 rounded transition-colors text-[18px] leading-none"
+                className="text-white/50 hover:text-white p-1 rounded transition-colors text-[16px] leading-none"
                 aria-label="Fermer"
               >
                 ✕
@@ -302,8 +307,8 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
           </div>
 
           {/* QUICK DIRECT CALL BANNER FOR EMERGENCIES */}
-          <div className="px-4 py-2 bg-white/5 border-b border-white/10 flex items-center justify-between text-[12px]">
-            <span className="text-white/60">Urgence ou panne sur route ?</span>
+          <div className="px-3.5 py-1.5 bg-white/5 border-b border-white/10 flex items-center justify-between text-[11px]">
+            <span className="text-white/60">Urgence dépannage ?</span>
             <a
               href="tel:+33495334730"
               className="text-white underline underline-offset-2 hover:opacity-75 flex items-center gap-1 font-mono font-medium"
@@ -314,7 +319,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
           </div>
 
           {/* MESSAGES THREAD */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 text-[14px]">
+          <div className="flex-1 overflow-y-auto p-3 space-y-3 text-[13px]">
             {messages.map((message) => {
               const isUser = message.role === 'user';
               return (
@@ -323,7 +328,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
                   className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 whitespace-pre-wrap leading-relaxed ${
+                    className={`max-w-[88%] rounded-xl px-3 py-2 whitespace-pre-wrap leading-relaxed ${
                       isUser
                         ? 'bg-white text-black font-normal rounded-tr-none shadow-md'
                         : 'bg-white/10 text-white/95 rounded-tl-none border border-white/10'
@@ -331,14 +336,14 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
                   >
                     {renderMessageContent(message.content)}
                   </div>
-                  <span className="text-[11px] text-white/35 mt-1 px-1">{message.timestamp}</span>
+                  <span className="text-[10px] text-white/35 mt-0.5 px-1">{message.timestamp}</span>
                 </div>
               );
             })}
 
             {/* TYPING INDICATOR */}
             {isLoading && (
-              <div className="flex items-center gap-2 text-white/50 text-[13px] bg-white/5 border border-white/10 rounded-2xl px-3.5 py-2.5 w-fit rounded-tl-none">
+              <div className="flex items-center gap-1.5 text-white/50 text-[12px] bg-white/5 border border-white/10 rounded-xl px-2.5 py-1.5 w-fit rounded-tl-none">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/60 animate-bounce" />
                 <span
                   className="inline-block w-1.5 h-1.5 rounded-full bg-white/60 animate-bounce"
@@ -348,7 +353,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
                   className="inline-block w-1.5 h-1.5 rounded-full bg-white/60 animate-bounce"
                   style={{ animationDelay: '0.4s' }}
                 />
-                <span className="ml-1 text-[12px]">L’assistant répond…</span>
+                <span className="ml-1 text-[11px]">En cours…</span>
               </div>
             )}
 
@@ -356,13 +361,13 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
           </div>
 
           {/* QUICK SUGGESTIONS (Chips) */}
-          <div className="px-4 py-2 border-t border-white/10 bg-black/20 flex gap-2 overflow-x-auto no-scrollbar">
+          <div className="px-3 py-1.5 border-t border-white/10 bg-black/20 flex gap-1.5 overflow-x-auto no-scrollbar">
             {SUGGESTIONS.map((suggestion, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleSendMessage(suggestion)}
-                className="whitespace-nowrap bg-white/5 hover:bg-white/15 border border-white/15 rounded-full px-3 py-1 text-[11px] sm:text-[12px] text-white/80 hover:text-white transition-colors cursor-pointer flex-shrink-0"
+                className="whitespace-nowrap bg-white/5 hover:bg-white/15 border border-white/15 rounded-full px-2.5 py-0.5 text-[11px] text-white/80 hover:text-white transition-colors cursor-pointer flex-shrink-0"
               >
                 {suggestion}
               </button>
@@ -370,7 +375,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
           </div>
 
           {/* INPUT BAR */}
-          <div className="p-3 border-t border-white/10 bg-black/40 flex items-center gap-2">
+          <div className="p-2.5 border-t border-white/10 bg-black/40 flex items-center gap-1.5">
             <input
               ref={inputRef}
               type="text"
@@ -379,17 +384,17 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
               onKeyDown={handleKeyDown}
               placeholder="Écrivez votre message…"
               disabled={isLoading}
-              className="flex-1 bg-white/10 border border-white/15 rounded-full px-4 py-2 text-[14px] text-white placeholder:text-white/35 outline-none focus:border-white transition-colors disabled:opacity-50"
+              className="flex-1 bg-white/10 border border-white/15 rounded-full px-3 py-1.5 text-[13px] text-white placeholder:text-white/35 outline-none focus:border-white transition-colors disabled:opacity-50"
             />
             <button
               type="button"
               onClick={() => handleSendMessage()}
               disabled={!input.trim() || isLoading}
-              className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:bg-neutral-200 transition-colors disabled:opacity-30 disabled:hover:bg-white cursor-pointer flex-shrink-0"
+              className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-neutral-200 transition-colors disabled:opacity-30 disabled:hover:bg-white cursor-pointer flex-shrink-0"
               aria-label="Envoyer"
             >
               <svg
-                className="w-4 h-4"
+                className="w-3.5 h-3.5"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSiteContent } from '../context/SiteContentContext';
 import { EditableText } from './EditableText';
 
@@ -9,6 +9,25 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
   const { content, updateField } = useSiteContent();
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+
+  // Automatically reset mobile menu when user scrolls down past the hero into the page
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleScroll = () => {
+      if (window.scrollY > window.innerHeight * 0.8) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [mobileMenuOpen]);
+
+  const handleToggleMenu = () => {
+    if (!mobileMenuOpen && window.scrollY > 100) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
 
   const handleNavClick = (id: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -27,11 +46,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
     <>
       {/* 
         NAVBAR:
-        Fixed at the top, full width, z-index: 10.
+        Fixed at the top, full width, z-index: 40 (above background and page sections).
         px-5 sm:px-8 py-4 sm:py-5
         flex justify-between items-center
       */}
-      <header className="fixed top-0 left-0 w-full z-10 px-5 sm:px-8 py-4 sm:py-5 flex justify-between items-center bg-gradient-to-b from-black/50 via-black/20 to-transparent">
+      <header className="fixed top-0 left-0 w-full z-40 px-5 sm:px-8 py-4 sm:py-5 flex justify-between items-center bg-gradient-to-b from-black/50 via-black/20 to-transparent">
         {/* LOGO — LEFT */}
         <div className="flex items-center gap-3 group">
           <EditableText
@@ -91,8 +110,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
         <div className="md:hidden flex items-center">
           <button
             type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex flex-col justify-center items-center gap-[5px] w-10 h-10 p-2 cursor-pointer z-20 focus:outline-none"
+            onClick={handleToggleMenu}
+            className="flex flex-col justify-center items-center gap-[5px] w-10 h-10 p-2 cursor-pointer z-50 focus:outline-none"
             aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
             aria-expanded={mobileMenuOpen}
           >
@@ -118,49 +137,51 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
         </div>
       </header>
 
-      {/* MOBILE OVERLAY */}
+      {/* MOBILE OVERLAY: absolute at top of page so it scrolls naturally with page content without being crushed */}
       <div
-        className={`md:hidden fixed inset-0 z-[9] bg-black/95 backdrop-blur-md flex flex-col justify-center items-start px-8 gap-8 transition-opacity duration-300 ${
+        className={`md:hidden absolute top-0 left-0 w-full min-h-screen z-30 bg-black/95 backdrop-blur-md transition-opacity duration-300 ${
           mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         style={{ fontFamily: 'var(--font-body)' }}
       >
-        <a
-          href="#services"
-          onClick={(e) => handleNavClick('services', e)}
-          className="text-[30px] font-medium text-white hover:opacity-60 transition-opacity"
-        >
-          Services
-        </a>
-        <a
-          href="#rendez-vous"
-          onClick={(e) => handleNavClick('rendez-vous', e)}
-          className="text-[30px] font-medium text-white hover:opacity-60 transition-opacity"
-        >
-          Prendre rendez-vous
-        </a>
-        <a
-          href="#localisation"
-          onClick={(e) => handleNavClick('localisation', e)}
-          className="text-[30px] font-medium text-white hover:opacity-60 transition-opacity"
-        >
-          Localisation & Horaires
-        </a>
-        <a
-          href="#avis"
-          onClick={(e) => handleNavClick('avis', e)}
-          className="text-[30px] font-medium text-white hover:opacity-60 transition-opacity"
-        >
-          Nos avis clients
-        </a>
-
-        <div className="pt-4 border-t border-white/20 w-full flex flex-col gap-4">
+        <div className="min-h-screen flex flex-col justify-center items-start px-8 py-24 gap-8">
           <a
-            href={`tel:${content.phone}`}
-            className="text-[32px] font-medium text-white underline underline-offset-4 hover:opacity-60 transition-opacity"
+            href="#services"
+            onClick={(e) => handleNavClick('services', e)}
+            className="text-[30px] font-medium text-white hover:opacity-60 transition-opacity"
           >
-            {content.phoneDisplay}
+            Services
           </a>
+          <a
+            href="#rendez-vous"
+            onClick={(e) => handleNavClick('rendez-vous', e)}
+            className="text-[30px] font-medium text-white hover:opacity-60 transition-opacity"
+          >
+            Prendre rendez-vous
+          </a>
+          <a
+            href="#localisation"
+            onClick={(e) => handleNavClick('localisation', e)}
+            className="text-[30px] font-medium text-white hover:opacity-60 transition-opacity"
+          >
+            Localisation & Horaires
+          </a>
+          <a
+            href="#avis"
+            onClick={(e) => handleNavClick('avis', e)}
+            className="text-[30px] font-medium text-white hover:opacity-60 transition-opacity"
+          >
+            Nos avis clients
+          </a>
+
+          <div className="pt-4 border-t border-white/20 w-full flex flex-col gap-4">
+            <a
+              href={`tel:${content.phone}`}
+              className="text-[32px] font-medium text-white underline underline-offset-4 hover:opacity-60 transition-opacity"
+            >
+              {content.phoneDisplay}
+            </a>
+          </div>
         </div>
       </div>
     </>
