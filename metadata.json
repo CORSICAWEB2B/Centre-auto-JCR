@@ -1,0 +1,6 @@
+{
+  "name": "Centre Auto JCR",
+  "description": "Atelier mécanique, entretien, pneumatiques et diagnostic automobile à Bastia (Zone Industrielle de Furiani).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
