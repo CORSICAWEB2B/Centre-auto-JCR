@@ -40,31 +40,6 @@ function videoSavePlugin(): Plugin {
   };
 }
 
-/**
- * Builds Cloudflare Pages & Workers _worker.js bundle automatically on build.
- */
-function cloudflareWorkerBuildPlugin(): Plugin {
-  return {
-    name: 'cloudflare-worker-build-plugin',
-    closeBundle: async () => {
-      try {
-        const esbuild = await import('esbuild');
-        await esbuild.build({
-          entryPoints: [path.resolve(process.cwd(), 'src/worker.ts')],
-          outfile: path.resolve(process.cwd(), 'dist/_worker.js'),
-          bundle: true,
-          format: 'esm',
-          platform: 'browser',
-          target: 'es2022',
-          minify: true,
-        });
-        console.log('✓ Cloudflare dist/_worker.js built successfully');
-      } catch (err) {
-        console.error('Failed to bundle dist/_worker.js:', err);
-      }
-    },
-  };
-}
 
 /**
  * Local development middleware proxying requests through the universal cloudHandler.
@@ -128,7 +103,6 @@ export default defineConfig(() => {
       tailwindcss(),
       videoSavePlugin(),
       devApiPlugin(),
-      cloudflareWorkerBuildPlugin(),
     ],
     resolve: {
       alias: {
