@@ -22,7 +22,7 @@ export const Hero: React.FC<HeroProps> = ({ onSelectAction }) => {
 
   return (
     <section
-      className="relative z-[1] w-full h-screen flex flex-col justify-end pb-12 md:justify-center md:pb-0 px-5 sm:px-8 md:px-10 overflow-hidden"
+      className="relative z-[1] w-full h-screen flex flex-col justify-end pb-28 sm:pb-32 md:justify-center md:pb-0 px-5 sm:px-8 md:px-10 overflow-hidden"
       style={{ fontFamily: 'var(--font-body)' }}
     >
       <div className="max-w-xl relative z-10">
