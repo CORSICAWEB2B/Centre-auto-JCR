@@ -1,7 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { loadSavedVideoFromIndexedDB } from '../utils/videoStorage';
+import React, { useEffect, useRef } from 'react';
 
-// Default static public video path (compatible with Vite, GitHub, Cloudflare Pages/Workers)
+// Static relative path pointing directly to /public/hero-video.mp4 (compatible with Vite, GitHub, Cloudflare Pages/Workers)
 export const HERO_VIDEO_URL = '/hero-video.mp4';
 
 export interface BackgroundVideoProps {
@@ -21,68 +20,27 @@ export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({
   const isSeekingRef = useRef<boolean>(false);
   const pendingSeekTimeRef = useRef<number | null>(null);
   const targetTimeRef = useRef<number>(0);
-  const hasSyncedToDisk = useRef<boolean>(false);
 
-  // Default to relative public asset /hero-video.mp4
-  const [activeSrc, setActiveSrc] = useState<string>(customVideoUrl || HERO_VIDEO_URL);
+  // Directly use /hero-video.mp4 pointing to /public/hero-video.mp4
+  const videoSrc = customVideoUrl || HERO_VIDEO_URL;
 
-  // Sync with prop if provided
-  useEffect(() => {
-    if (customVideoUrl) {
-      setActiveSrc(customVideoUrl);
-    }
-  }, [customVideoUrl]);
-
-  // Check if browser has a custom user-imported video stored in IndexedDB.
-  // If so, use it and automatically sync it to /api/save-hero-video so it is permanently
-  // written to /public/hero-video.mp4 on disk for GitHub and Cloudflare export!
-  useEffect(() => {
-    async function restoreAndSyncSavedVideo() {
-      if (customVideoUrl) return;
-
-      try {
-        const saved = await loadSavedVideoFromIndexedDB();
-        if (saved && saved.blob) {
-          const blobUrl = URL.createObjectURL(saved.blob);
-          setActiveSrc(blobUrl);
-
-          // Auto-sync blob to /public/hero-video.mp4 on disk via development server API
-          if (!hasSyncedToDisk.current) {
-            hasSyncedToDisk.current = true;
-            fetch('/api/save-hero-video', {
-              method: 'POST',
-              body: saved.blob,
-            }).catch((err) => {
-              console.warn('Auto-sync to /public/hero-video.mp4:', err);
-            });
-          }
-        }
-      } catch (err) {
-        console.warn('Could not restore video from IndexedDB:', err);
-      }
-    }
-
-    restoreAndSyncSavedVideo();
-  }, [customVideoUrl]);
-
-  // Ensure autoplay starts reliably across all browsers (Chrome, Safari, iOS, Cloudflare)
+  // Guarantee seamless autoplay across all browsers (Safari, Chrome, Cloudflare)
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
       video.muted = true;
       video.defaultMuted = true;
       video.play().catch(() => {
-        // Autoplay policy fallback: retry on first interaction
-        const handleFirstInteraction = () => {
+        const handleInteraction = () => {
           video.play().catch(() => {});
-          window.removeEventListener('click', handleFirstInteraction);
-          window.removeEventListener('touchstart', handleFirstInteraction);
+          window.removeEventListener('click', handleInteraction);
+          window.removeEventListener('touchstart', handleInteraction);
         };
-        window.addEventListener('click', handleFirstInteraction, { once: true });
-        window.addEventListener('touchstart', handleFirstInteraction, { once: true });
+        window.addEventListener('click', handleInteraction, { once: true });
+        window.addEventListener('touchstart', handleInteraction, { once: true });
       });
     }
-  }, [activeSrc]);
+  }, [videoSrc]);
 
   // Horizontal mouse-scrub & touch-scrub seeking logic
   useEffect(() => {
@@ -145,7 +103,6 @@ export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({
 
     const handlePointerEnd = () => {
       prevXRef.current = null;
-      // Resume playback after scrubbing
       const video = videoRef.current;
       if (video && video.paused) {
         video.play().catch(() => {});
@@ -193,14 +150,13 @@ export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none select-none bg-[#07080a]">
       {/* 
         HERO BACKGROUND VIDEO:
-        - Autoplay, muted, loop, playsinline
-        - Static relative path /hero-video.mp4 (compatible with Vite, GitHub, Cloudflare Pages/Workers)
+        - Points directly to local file /public/hero-video.mp4 via relative path /hero-video.mp4
+        - Attributes: autoPlay, muted, loop, playsInline, preload="auto"
         - Exact framing: object-cover with object-position 70% center
       */}
       <video
         ref={videoRef}
-        key={activeSrc}
-        src={activeSrc}
+        src={videoSrc}
         className="fixed inset-0 w-full h-full object-cover z-0"
         style={{ objectPosition: '70% center' }}
         muted
@@ -210,12 +166,6 @@ export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({
         preload="auto"
         onSeeked={handleSeeked}
         onLoadedMetadata={handleLoadedMetadata}
-        onError={() => {
-          // If a blob URL fails, fallback to static /hero-video.mp4
-          if (activeSrc !== HERO_VIDEO_URL) {
-            setActiveSrc(HERO_VIDEO_URL);
-          }
-        }}
       />
 
       {/* Subtle contrast overlay ensuring crisp legibility of white typography */}
