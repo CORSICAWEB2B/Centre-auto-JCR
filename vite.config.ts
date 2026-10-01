@@ -205,7 +205,7 @@ function geminiChatPlugin(): Plugin {
           req.on('end', async () => {
             try {
               const body = JSON.parse(Buffer.concat(chunks).toString('utf-8'));
-              const { submitToGoogleForms } = await import('./src/server/googleFormsService');
+              const { submitToGoogleForms } = await import('./src/server/googleFormsService.ts');
               const result = await submitToGoogleForms({
                 nom: body.nom || '',
                 telephone: body.telephone || '',
@@ -237,7 +237,7 @@ export default defineConfig(() => {
     plugins: [react(), tailwindcss(), videoSavePlugin(), geminiChatPlugin()],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        '@': path.resolve(process.cwd(), '.'),
       },
     },
     server: {

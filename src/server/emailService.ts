@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { submitToGoogleForms } from './googleFormsService';
+import { submitToGoogleForms } from './googleFormsService.ts';
 
 export interface AppointmentData {
   nom: string;
