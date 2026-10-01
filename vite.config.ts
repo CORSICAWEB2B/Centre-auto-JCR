@@ -4,8 +4,8 @@ import path from 'path';
 import fs from 'fs';
 import { defineConfig, Plugin } from 'vite';
 import { GoogleGenAI, Type, FunctionDeclaration } from '@google/genai';
-import { JCR_ASSISTANT_SYSTEM_INSTRUCTION } from './src/server/assistantConfig';
-import { sendAppointmentEmail } from './src/server/emailService';
+import { JCR_ASSISTANT_SYSTEM_INSTRUCTION } from './src/server/assistantConfig.ts';
+import { sendAppointmentEmail } from './src/server/emailService.ts';
 
 function videoSavePlugin(): Plugin {
   return {
@@ -18,7 +18,11 @@ function videoSavePlugin(): Plugin {
           req.on('end', () => {
             try {
               const buffer = Buffer.concat(chunks);
-              const targetPath = path.resolve(__dirname, 'public/hero-video.mp4');
+              const publicDir = path.resolve(process.cwd(), 'public');
+              if (!fs.existsSync(publicDir)) {
+                fs.mkdirSync(publicDir, { recursive: true });
+              }
+              const targetPath = path.resolve(publicDir, 'hero-video.mp4');
               fs.writeFileSync(targetPath, buffer);
               res.setHeader('Content-Type', 'application/json');
               res.statusCode = 200;
