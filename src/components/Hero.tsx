@@ -8,11 +8,13 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ onSelectAction }) => {
   const { content } = useSiteContent();
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoForwardRef = useRef<HTMLVideoElement | null>(null);
+  const videoReverseRef = useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [activeDirection, setActiveDirection] = useState<'forward' | 'reverse'>('forward');
 
   useEffect(() => {
-    const video = videoRef.current;
+    const video = videoForwardRef.current;
     if (video) {
       video.muted = true;
       video.playsInline = true;
@@ -22,13 +24,31 @@ export const Hero: React.FC<HeroProps> = ({ onSelectAction }) => {
     }
   }, []);
 
+  const handleForwardEnded = () => {
+    setIsPlaying(false);
+    if (videoReverseRef.current) {
+      videoReverseRef.current.currentTime = 0;
+    }
+    setActiveDirection('reverse');
+  };
+
+  const handleReverseEnded = () => {
+    setIsPlaying(false);
+    if (videoForwardRef.current) {
+      videoForwardRef.current.currentTime = 0;
+    }
+    setActiveDirection('forward');
+  };
+
   const toggleVideoPlay = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      video.play().then(() => setIsPlaying(true)).catch(() => {});
+    const currentVideo =
+      activeDirection === 'forward' ? videoForwardRef.current : videoReverseRef.current;
+    if (!currentVideo) return;
+
+    if (currentVideo.paused) {
+      currentVideo.play().then(() => setIsPlaying(true)).catch(() => {});
     } else {
-      video.pause();
+      currentVideo.pause();
       setIsPlaying(false);
     }
   };
@@ -95,23 +115,41 @@ export const Hero: React.FC<HeroProps> = ({ onSelectAction }) => {
         {/* 6. MEDIA CARD (Displayed BELOW text & actions on mobile, beside on desktop) */}
         <div className="lg:col-span-5 mt-2 sm:mt-4 lg:mt-0">
           <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 bg-[#0d0f14] shadow-xl sm:shadow-2xl aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3] group">
-            {/* Embedded video */}
+            {/* Forward Video */}
             <video
-              ref={videoRef}
+              ref={videoForwardRef}
               src="/hero-video.mp4"
-              className="w-full h-full object-cover"
+              className={`absolute inset-0 w-full h-full object-cover ${
+                activeDirection === 'forward' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+              }`}
               muted
               playsInline
-              loop
+              preload="auto"
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
+              onEnded={handleForwardEnded}
+            />
+
+            {/* Reverse Video */}
+            <video
+              ref={videoReverseRef}
+              src="/hero-video-reverse.mp4"
+              className={`absolute inset-0 w-full h-full object-cover ${
+                activeDirection === 'reverse' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+              }`}
+              muted
+              playsInline
+              preload="auto"
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              onEnded={handleReverseEnded}
             />
 
             {/* Gradient vignette */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30 pointer-events-none" />
+            <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-black/20 to-black/30 pointer-events-none" />
 
             {/* Top Bar inside media card */}
-            <div className="absolute top-3 left-3 right-3 sm:top-4 sm:left-4 sm:right-4 flex items-center justify-between text-xs">
+            <div className="absolute top-3 left-3 right-3 sm:top-4 sm:left-4 sm:right-4 z-30 flex items-center justify-between text-xs">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-white/90">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 <span className="text-[11px] sm:text-xs">Atelier mécanique</span>
@@ -129,7 +167,7 @@ export const Hero: React.FC<HeroProps> = ({ onSelectAction }) => {
             </div>
 
             {/* Bottom caption inside media card */}
-            <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-black/65 backdrop-blur-md border border-white/10 text-white/90 flex items-center justify-between">
+            <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 z-30 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-black/65 backdrop-blur-md border border-white/10 text-white/90 flex items-center justify-between">
               <div>
                 <p className="text-[12.5px] sm:text-[13px] font-medium text-white leading-tight">Centre Auto JCR</p>
                 <p className="text-[10.5px] sm:text-[11px] text-white/50">Furiani · 20600 Bastia</p>
