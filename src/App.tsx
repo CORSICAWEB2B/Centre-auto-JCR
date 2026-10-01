@@ -5,18 +5,21 @@
 
 import React, { useState } from 'react';
 import { SiteContentProvider } from './context/SiteContentContext';
-import { BackgroundVideo } from './components/BackgroundVideo';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
-import { ServicesSection } from './components/ServicesSection';
-import { AppointmentSection } from './components/AppointmentSection';
-import { LocationSection } from './components/LocationSection';
+import { TrustBar } from './components/TrustBar';
+import { ServicesBento } from './components/ServicesBento';
+import { AboutGarageSection } from './components/AboutGarageSection';
 import { ReviewsSection } from './components/ReviewsSection';
+import { AppointmentSection } from './components/AppointmentSection';
+import { ContactLocationSection } from './components/ContactLocationSection';
 import { Footer } from './components/Footer';
 import { ChatAssistant } from './components/ChatAssistant';
+import { MobileActionBar } from './components/MobileActionBar';
 
 function MainLayout() {
   const [chatOpen, setChatOpen] = useState<boolean>(false);
+  const [selectedServiceForAppointment, setSelectedServiceForAppointment] = useState<string | undefined>(undefined);
 
   const handleNavigate = (targetId: string) => {
     const el = document.getElementById(targetId);
@@ -28,37 +31,57 @@ function MainLayout() {
   const handleHeroAction = (
     target: 'rendez-vous' | 'services' | 'localisation' | 'horaires' | 'avis'
   ) => {
-    handleNavigate(target);
+    if (target === 'localisation') {
+      handleNavigate('contact');
+    } else {
+      handleNavigate(target);
+    }
+  };
+
+  const handleSelectServiceAppointment = (serviceName?: string) => {
+    setSelectedServiceForAppointment(serviceName);
+    handleNavigate('rendez-vous');
   };
 
   return (
     <div className="relative min-h-screen bg-[#07080a] text-white selection:bg-white selection:text-black">
-      {/* 
-        FULL-SCREEN BACKGROUND VIDEO:
-        - Controlled via horizontal mouse-scrubbing
-        - Pristine and immersive background without intrusive toolbars
-      */}
-      <BackgroundVideo />
-
-      {/* FIXED TOP NAVBAR */}
+      {/* 1. STICKY PROFESSIONAL HEADER (Mobile: 62px compact with quick call & hamburger) */}
       <Navbar onNavigate={handleNavigate} />
 
-      {/* FULL-SCREEN HERO SECTION (Creative agency minimalist aesthetic) */}
       <main>
+        {/* 2. COMPACT HERO SECTION (Vertical mobile stack, clamp typography, media card below) */}
         <Hero onSelectAction={handleHeroAction} />
 
-        {/* MINIMAL CONTENT SECTIONS (Scrollable below hero) */}
-        <ServicesSection />
-        <AppointmentSection />
-        <LocationSection />
-        <ReviewsSection />
+        {/* 3. BANDE DE CONFIANCE (3 verified items, touch-friendly) */}
+        <TrustBar onNavigateAvis={() => handleNavigate('avis')} />
+
+        {/* 4. SERVICES EN GRILLE BENTO (Single column on mobile, bottom sheet detail) */}
+        <ServicesBento onSelectAppointment={handleSelectServiceAppointment} />
+
+        {/* 5. PRÉSENTATION DU GARAGE : CENTRE AUTO JCR */}
+        <AboutGarageSection onNavigateContact={() => handleNavigate('contact')} />
+
+        {/* 6. AVIS CLIENTS CERTIFIÉS (Touch scroll-snap carousel on mobile) */}
+        <ReviewsSection onNavigateAppointment={() => handleNavigate('rendez-vous')} />
+
+        {/* 7. PRISE DE RENDEZ-VOUS (16px inputs, single-column mobile form, touch RGPD checkbox) */}
+        <AppointmentSection initialServiceName={selectedServiceForAppointment} />
+
+        {/* 8. HORAIRES / LOCALISATION / CONTACT (3 clean mobile cards with direct call & map buttons) */}
+        <ContactLocationSection />
       </main>
 
-      {/* FOOTER */}
-      <Footer />
+      {/* 9. FOOTER MINIMALISTE (Vertical mobile stack with clearance for action bar) */}
+      <Footer onNavigate={handleNavigate} />
 
-      {/* OFFICIAL CENTRE AUTO JCR GEMINI CHATBOT (Bottom right) */}
+      {/* 10. ASSISTANT JCR (Gemini Chatbot, safe-area positioning above mobile bar) */}
       <ChatAssistant isOpen={chatOpen} onToggle={() => setChatOpen((prev) => !prev)} />
+
+      {/* 11. MOBILE BOTTOM ACTION BAR (Strictly mobile only, auto-hides when chat is open) */}
+      <MobileActionBar
+        onNavigateAppointment={() => handleNavigate('rendez-vous')}
+        isChatOpen={chatOpen}
+      />
     </div>
   );
 }

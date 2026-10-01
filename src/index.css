@@ -5,6 +5,11 @@
   --font-body: 'HelveticaNowDisplayW01-Rg', 'Helvetica Neue', Arial, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   font-family: var(--font-body);
   background-color: #060709;
@@ -20,6 +25,27 @@ body {
 
 .font-body {
   font-family: var(--font-body);
+}
+
+/* Prevent auto-zoom on iOS Safari for form fields */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Safe area inset for modern smartphones (iPhone Home indicator) */
+.safe-area-bottom {
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
+}
+
+/* Clean hide-scrollbar utility for horizontal snap carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 @keyframes blink {

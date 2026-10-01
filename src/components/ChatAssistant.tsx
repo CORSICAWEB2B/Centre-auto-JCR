@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useSiteContent } from '../context/SiteContentContext';
 
 export interface ChatMessage {
   id: string;
@@ -12,17 +13,16 @@ const INITIAL_MESSAGES: ChatMessage[] = [
     id: 'welcome-1',
     role: 'model',
     content:
-      'Bonjour ! Je suis l’assistant virtuel officiel du Centre Auto JCR à Bastia.\n\nComment puis-je vous aider ? Je peux vous renseigner sur nos services, vous aider à décrire un bruit ou un voyant, ou préparer avec vous une demande de rendez-vous.',
+      'Bonjour ! Je suis l’assistant virtuel du Centre Auto JCR à Bastia.\n\nComment puis-je vous aider ? Je peux vous renseigner sur nos prestations, analyser un problème mécanique ou préparer votre rendez-vous.',
     timestamp: 'À l’instant',
   },
 ];
 
 const SUGGESTIONS = [
-  'Quels sont vos horaires d’ouverture ?',
-  'Je souhaite prendre un rendez-vous',
-  'J’ai un voyant allumé sur mon tableau de bord',
-  'Combien coûte une révision / vidange ?',
-  'Où est situé le garage à Bastia ?',
+  'Quels sont vos horaires ?',
+  'Prendre un rendez-vous',
+  'Voyant allumé au tableau de bord',
+  'Où est situé le garage ?',
 ];
 
 interface ChatAssistantProps {
@@ -34,6 +34,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
   isOpen: externalIsOpen,
   onToggle: externalOnToggle,
 }) => {
+  const { content } = useSiteContent();
   const [internalIsOpen, setInternalIsOpen] = useState<boolean>(false);
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
   const toggleOpen = externalOnToggle || (() => setInternalIsOpen((prev) => !prev));
@@ -157,35 +158,29 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
   };
 
   // Helper to format messages with markdown support (bold, links, phone buttons)
-  const renderMessageContent = (content: string) => {
-    // 1. Normalize markdown telephone links [04 95 33 47 30](tel:+33495334730) into simple text for uniform parsing
-    let cleanText = content.replace(/\[([^\]]+)\]\((tel:[^)]+)\)/g, '$1');
-
-    // Split paragraphs by double newlines
+  const renderMessageContent = (contentStr: string) => {
+    let cleanText = contentStr.replace(/\[([^\]]+)\]\((tel:[^)]+)\)/g, '$1');
     const paragraphs = cleanText.split('\n');
 
     return paragraphs.map((paragraph, pIdx) => {
       if (!paragraph.trim()) {
-        return <div key={pIdx} className="h-2" />;
+        return <div key={pIdx} className="h-1.5" />;
       }
 
-      // Check for bullet lists
       const isBullet = paragraph.trim().startsWith('- ') || paragraph.trim().startsWith('• ');
       const textToParse = isBullet ? paragraph.trim().replace(/^[-•]\s*/, '') : paragraph;
 
-      // Tokenize bold **text** and phone numbers
       const tokens = textToParse.split(/(\*\*[^*]+\*\*|04\s*95\s*33\s*47\s*30)/g);
 
       const parsedTokens = tokens.map((token, tIdx) => {
         if (!token) return null;
 
-        // Phone number
         if (token.replace(/\s+/g, '') === '0495334730') {
           return (
             <a
               key={tIdx}
               href="tel:+33495334730"
-              className="inline-flex items-center gap-1 bg-white/20 hover:bg-white text-white hover:text-black px-2 py-0.5 rounded font-mono text-[13px] font-medium transition-colors my-0.5"
+              className="inline-flex items-center gap-1 bg-white/20 active:bg-white text-white active:text-black px-2 py-0.5 rounded font-mono text-[13px] font-medium transition-colors my-0.5"
               title="Appeler le Centre Auto JCR"
             >
               <span>📞</span>
@@ -194,7 +189,6 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
           );
         }
 
-        // Bold text
         if (token.startsWith('**') && token.endsWith('**')) {
           const boldInner = token.slice(2, -2);
           return <strong key={tIdx} className="font-semibold text-white">{boldInner}</strong>;
@@ -213,7 +207,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
       }
 
       return (
-        <p key={pIdx} className="my-1.5 leading-relaxed">
+        <p key={pIdx} className="my-1 leading-relaxed">
           {parsedTokens}
         </p>
       );
@@ -222,31 +216,35 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
 
   return (
     <>
-      {/* FLOATING LAUNCHER BUTTON (Bottom-right) */}
-      <div className="fixed bottom-4 right-4 z-40">
+      {/* 
+        FLOATING LAUNCHER BUTTON:
+        On mobile: positioned at bottom-[72px] right-3, clear of the sticky action bar!
+        On desktop: bottom-6 right-6
+      */}
+      <div className="fixed bottom-[68px] sm:bottom-6 right-3 sm:right-6 z-40">
         <button
           type="button"
           onClick={toggleOpen}
-          className={`flex items-center gap-2.5 px-4 py-2.5 rounded-full shadow-2xl transition-all duration-300 backdrop-blur-md cursor-pointer border focus:outline-none ${
+          className={`min-h-[44px] flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full shadow-2xl transition-all duration-200 backdrop-blur-xl cursor-pointer border focus:outline-none ${
             isOpen
-              ? 'bg-white text-black border-white'
-              : 'bg-black/85 hover:bg-black text-white border-white/25 hover:border-white/50 hover:scale-[1.02]'
+              ? 'bg-white text-black border-white shadow-black/80'
+              : 'bg-[#0f1117]/95 hover:bg-[#141720] active:bg-[#181c26] text-white border-white/20 shadow-black/70'
           }`}
           aria-label={isOpen ? 'Fermer le chat' : 'Ouvrir l’assistant virtuel du Centre Auto JCR'}
         >
           {/* Avatar icon */}
-          <div className="relative flex items-center justify-center w-6 h-6 rounded-full bg-white/10 text-[14px]">
-            <span>✳︎</span>
+          <div className="relative flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/10 text-[12px] sm:text-[13px] flex-shrink-0">
+            <span>✳</span>
             {hasUnread && !isOpen && (
               <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
             )}
           </div>
 
           <span
-            className="text-[13px] sm:text-[14px] font-medium tracking-tight flex items-center gap-2"
+            className="text-[12.5px] sm:text-[13.5px] font-medium tracking-tight flex items-center gap-1.5"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
-            <span>{isOpen ? 'Fermer l’assistant' : 'Assistant JCR'}</span>
+            <span>{isOpen ? 'Fermer' : 'Assistant JCR'}</span>
             {!isOpen && (
               <span className="relative flex h-2 w-2 items-center justify-center" title="Connecté • En ligne">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -257,32 +255,35 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
         </button>
       </div>
 
-      {/* CHAT WINDOW / MODAL (Compact & streamlined) */}
+      {/* 
+        CHAT WINDOW / MODAL:
+        Mobile-first: Near-full drawer / bottom-sheet on mobile (inset-x-2 bottom-2 h-[82dvh] max-h-[85dvh]),
+        Compact floating modal on sm+ desktop (w-[340px] h-[480px])
+      */}
       {isOpen && (
         <div
           role="dialog"
           aria-label="Assistant virtuel Centre Auto JCR"
-          className="fixed bottom-16 right-4 z-40 w-[calc(100vw-32px)] sm:w-[320px] max-w-[340px] h-[440px] max-h-[calc(100vh-90px)] bg-[#0d0f12] border border-white/20 rounded-2xl shadow-2xl flex flex-col overflow-hidden text-white backdrop-blur-xl animate-in fade-in slide-in-from-bottom-3 duration-200"
+          className="fixed inset-x-2 bottom-2 sm:inset-x-auto sm:right-6 sm:bottom-6 z-50 w-auto sm:w-[350px] h-[82dvh] sm:h-[480px] max-h-[85dvh] bg-[#0c0e13]/98 border border-white/20 rounded-[24px] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden text-white backdrop-blur-2xl animate-in fade-in slide-in-from-bottom-4 duration-200 safe-area-bottom"
           style={{ fontFamily: 'var(--font-body)' }}
         >
           {/* HEADER */}
-          <div className="p-2.5 px-3.5 border-b border-white/10 bg-black/40 flex items-center justify-between">
+          <div className="p-3 sm:px-4 border-b border-white/10 bg-black/40 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white text-[14px] select-none">
-                ✳︎
+              <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white text-[13px] select-none flex-shrink-0">
+                ✳
               </div>
               <div>
                 <h3
-                  className="text-[13.5px] font-medium leading-tight text-white flex items-center gap-1.5"
+                  className="text-[13px] sm:text-[14px] font-medium leading-tight text-white flex items-center gap-1.5"
                   style={{ fontFamily: 'var(--font-heading)' }}
                 >
                   Assistant JCR
-                  <span className="relative flex h-2 w-2 items-center justify-center" title="Connecté • En ligne">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]" />
+                  <span className="relative flex h-1.5 w-1.5 items-center justify-center" title="En ligne">
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
                   </span>
                 </h3>
-                <p className="text-[11px] text-white/50">Atelier Bastia (Furiani)</p>
+                <p className="text-[10.5px] sm:text-[11px] text-white/50">Atelier Bastia (Furiani)</p>
               </div>
             </div>
 
@@ -290,28 +291,29 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
               <button
                 type="button"
                 onClick={handleResetChat}
-                className="text-white/40 hover:text-white p-1 rounded transition-colors text-[12px]"
+                className="min-h-[44px] min-w-[44px] text-white/50 hover:text-white p-2 rounded-full transition-colors text-[13px] flex items-center justify-center cursor-pointer"
                 title="Effacer l’historique"
+                aria-label="Effacer l'historique"
               >
                 ↺
               </button>
               <button
                 type="button"
                 onClick={toggleOpen}
-                className="text-white/50 hover:text-white p-1 rounded transition-colors text-[16px] leading-none"
-                aria-label="Fermer"
+                className="min-h-[44px] min-w-[44px] text-white/70 hover:text-white p-2 rounded-full transition-colors text-[17px] leading-none flex items-center justify-center cursor-pointer"
+                aria-label="Fermer le chat"
               >
                 ✕
               </button>
             </div>
           </div>
 
-          {/* QUICK DIRECT CALL BANNER FOR EMERGENCIES */}
-          <div className="px-3.5 py-1.5 bg-white/5 border-b border-white/10 flex items-center justify-between text-[11px]">
+          {/* QUICK DIRECT CALL BANNER */}
+          <div className="px-3.5 py-1.5 bg-white/5 border-b border-white/10 flex items-center justify-between text-[11px] flex-shrink-0">
             <span className="text-white/60">Urgence dépannage ?</span>
             <a
               href="tel:+33495334730"
-              className="text-white underline underline-offset-2 hover:opacity-75 flex items-center gap-1 font-mono font-medium"
+              className="min-h-[32px] text-white underline underline-offset-2 hover:opacity-75 flex items-center gap-1 font-mono font-medium"
             >
               <span>📞</span>
               <span>04 95 33 47 30</span>
@@ -319,7 +321,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
           </div>
 
           {/* MESSAGES THREAD */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-3 text-[13px]">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-3.5 space-y-2.5 text-[13px]">
             {messages.map((message) => {
               const isUser = message.role === 'user';
               return (
@@ -328,7 +330,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
                   className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
                 >
                   <div
-                    className={`max-w-[88%] rounded-xl px-3 py-2 whitespace-pre-wrap leading-relaxed ${
+                    className={`max-w-[88%] rounded-2xl px-3 py-2 whitespace-pre-wrap leading-relaxed ${
                       isUser
                         ? 'bg-white text-black font-normal rounded-tr-none shadow-md'
                         : 'bg-white/10 text-white/95 rounded-tl-none border border-white/10'
@@ -336,14 +338,14 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
                   >
                     {renderMessageContent(message.content)}
                   </div>
-                  <span className="text-[10px] text-white/35 mt-0.5 px-1">{message.timestamp}</span>
+                  <span className="text-[9.5px] text-white/35 mt-0.5 px-1">{message.timestamp}</span>
                 </div>
               );
             })}
 
             {/* TYPING INDICATOR */}
             {isLoading && (
-              <div className="flex items-center gap-1.5 text-white/50 text-[12px] bg-white/5 border border-white/10 rounded-xl px-2.5 py-1.5 w-fit rounded-tl-none">
+              <div className="flex items-center gap-1.5 text-white/50 text-[12px] bg-white/5 border border-white/10 rounded-2xl px-2.5 py-1.5 w-fit rounded-tl-none">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-white/60 animate-bounce" />
                 <span
                   className="inline-block w-1.5 h-1.5 rounded-full bg-white/60 animate-bounce"
@@ -360,22 +362,22 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
             <div ref={messagesEndRef} />
           </div>
 
-          {/* QUICK SUGGESTIONS (Chips) */}
-          <div className="px-3 py-1.5 border-t border-white/10 bg-black/20 flex gap-1.5 overflow-x-auto no-scrollbar">
+          {/* QUICK SUGGESTIONS (Chips with horizontal scroll) */}
+          <div className="px-3 py-1.5 border-t border-white/10 bg-black/20 flex gap-1.5 overflow-x-auto no-scrollbar flex-shrink-0">
             {SUGGESTIONS.map((suggestion, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleSendMessage(suggestion)}
-                className="whitespace-nowrap bg-white/5 hover:bg-white/15 border border-white/15 rounded-full px-2.5 py-0.5 text-[11px] text-white/80 hover:text-white transition-colors cursor-pointer flex-shrink-0"
+                className="min-h-[32px] whitespace-nowrap bg-white/5 hover:bg-white/15 active:bg-white/20 border border-white/15 rounded-full px-2.5 py-1 text-[11px] text-white/80 transition-colors cursor-pointer flex-shrink-0"
               >
                 {suggestion}
               </button>
             ))}
           </div>
 
-          {/* INPUT BAR */}
-          <div className="p-2.5 border-t border-white/10 bg-black/40 flex items-center gap-1.5">
+          {/* INPUT BAR (text-[16px] on mobile to prevent Safari zoom) */}
+          <div className="p-2 sm:p-2.5 border-t border-white/10 bg-black/40 flex items-center gap-1.5 flex-shrink-0">
             <input
               ref={inputRef}
               type="text"
@@ -384,17 +386,17 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
               onKeyDown={handleKeyDown}
               placeholder="Écrivez votre message…"
               disabled={isLoading}
-              className="flex-1 bg-white/10 border border-white/15 rounded-full px-3 py-1.5 text-[13px] text-white placeholder:text-white/35 outline-none focus:border-white transition-colors disabled:opacity-50"
+              className="flex-1 min-h-[44px] bg-white/10 border border-white/15 rounded-full px-3.5 py-2 text-[16px] sm:text-[13px] text-white placeholder:text-white/35 outline-none focus:border-white transition-colors disabled:opacity-50"
             />
             <button
               type="button"
               onClick={() => handleSendMessage()}
               disabled={!input.trim() || isLoading}
-              className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-neutral-200 transition-colors disabled:opacity-30 disabled:hover:bg-white cursor-pointer flex-shrink-0"
+              className="w-10 h-10 min-h-[40px] min-w-[40px] rounded-full bg-white text-black flex items-center justify-center active:bg-neutral-200 transition-colors disabled:opacity-30 disabled:hover:bg-white cursor-pointer flex-shrink-0"
               aria-label="Envoyer"
             >
               <svg
-                className="w-3.5 h-3.5"
+                className="w-4 h-4"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"

@@ -1,216 +1,142 @@
-import React, { useState, useEffect } from 'react';
-import { useTypewriter } from '../hooks/useTypewriter';
+import React, { useRef, useState, useEffect } from 'react';
+import { Calendar, Phone, Play, Pause, ShieldCheck, MapPin } from 'lucide-react';
 import { useSiteContent } from '../context/SiteContentContext';
-import { EditableText } from './EditableText';
 
 interface HeroProps {
   onSelectAction: (target: 'rendez-vous' | 'services' | 'localisation' | 'horaires' | 'avis') => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({ onSelectAction }) => {
-  const { content, updateField, isEditing } = useSiteContent();
-  const { displayed, done } = useTypewriter(content.typewriterText, 38, 600);
-  const [buttonsVisible, setButtonsVisible] = useState<boolean>(false);
+  const { content } = useSiteContent();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
   useEffect(() => {
-    // Buttons become visible 400ms after page load.
-    const timer = setTimeout(() => {
-      setButtonsVisible(true);
-    }, 400);
-    return () => clearTimeout(timer);
+    const video = videoRef.current;
+    if (video) {
+      video.muted = true;
+      video.playsInline = true;
+      video.play().catch(() => {
+        setIsPlaying(false);
+      });
+    }
   }, []);
 
+  const toggleVideoPlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      video.play().then(() => setIsPlaying(true)).catch(() => {});
+    } else {
+      video.pause();
+      setIsPlaying(false);
+    }
+  };
+
   return (
-    <section
-      className="relative z-[1] w-full h-screen flex flex-col justify-end pb-28 sm:pb-32 md:justify-center md:pb-0 px-5 sm:px-8 md:px-10 overflow-hidden"
-      style={{ fontFamily: 'var(--font-body)' }}
-    >
-      <div className="max-w-xl relative z-10">
-        {/* 
-          GOOGLE REVIEWS BADGE / BUTTON (Displayed above intro lines on smartphone, preserved on PC in navbar)
-        */}
-        <div className="md:hidden mb-3.5 sm:mb-4">
-          <a
-            href="#avis"
-            onClick={(e) => {
-              e.preventDefault();
-              onSelectAction('avis');
-            }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 active:bg-white/20 border border-white/20 backdrop-blur-md transition-all text-[13px] text-white tracking-normal shadow-sm cursor-pointer"
-            title="Consulter nos avis clients sur Google"
-          >
-            <span className="text-amber-400 select-none text-[12px] leading-none" aria-label="5 étoiles">
-              ⭐⭐⭐⭐⭐
-            </span>
-            <span className="font-semibold text-white tracking-tight text-[13px]">4,8/5</span>
-            <span className="text-white/75 text-[12px]">sur Google</span>
-          </a>
-        </div>
-
-        {/* 
-          1. INTRO LABEL (Unblurred & Editable)
-        */}
-        <div
-          className="mb-5 sm:mb-6 text-white font-normal"
-          style={{
-            fontSize: 'clamp(18px, 4vw, 26px)',
-            lineHeight: 1.3,
-          }}
-        >
-          <EditableText
-            as="span"
-            value={content.introLine1}
-            onChange={(val) => updateField('introLine1', val)}
-            className="block"
-          />
-          <EditableText
-            as="span"
-            value={content.introLine2}
-            onChange={(val) => updateField('introLine2', val)}
-            className="block"
-          />
-        </div>
-
-        {/* 
-          2. TYPEWRITER TEXT
-          In normal mode: animated typewriter with blinking cursor.
-          In edit mode: full text editable in-place!
-        */}
-        {isEditing ? (
-          <div className="mb-5 sm:mb-6">
-            <span className="block text-[11px] text-amber-300 uppercase tracking-wider mb-1">
-              ✏️ Texte machine à écrire (cliquez pour modifier) :
-            </span>
-            <EditableText
-              as="p"
-              multiline
-              value={content.typewriterText}
-              onChange={(val) => updateField('typewriterText', val)}
-              className="text-white font-normal min-h-[54px]"
-              style={{
-                fontSize: 'clamp(18px, 4vw, 26px)',
-                lineHeight: 1.35,
-              }}
-            />
+    <section className="relative z-10 pt-[78px] pb-10 sm:pt-32 sm:pb-16 md:pt-36 md:pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        {/* MOBILE & DESKTOP EDITORIAL TEXT BLOCK */}
+        <div className="lg:col-span-7 flex flex-col justify-center">
+          {/* 1. Kicker / Eyebrow */}
+          <div className="inline-flex items-center gap-2 text-[12px] sm:text-[13px] text-white/65 mb-3 sm:mb-4">
+            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <span className="font-medium tracking-wide">Centre Auto JCR · Bastia</span>
+            <span aria-hidden="true" className="text-white/30">·</span>
+            <span className="text-white/50">Atelier mécanique</span>
           </div>
-        ) : (
-          <p
-            className="text-white mb-5 sm:mb-6 font-normal min-h-[54px]"
-            style={{
-              fontSize: 'clamp(18px, 4vw, 26px)',
-              lineHeight: 1.35,
-            }}
+
+          {/* 2. Main Title (Responsive clamp: 30-36px mobile, 44-58px desktop) */}
+          <h1
+            className="text-[30px] sm:text-[42px] md:text-[50px] lg:text-[58px] font-semibold tracking-[-0.03em] text-white leading-[1.14] sm:leading-[1.08] mb-4 sm:mb-6"
+            style={{ fontFamily: 'var(--font-heading)' }}
           >
-            <span>{displayed}</span>
-            {!done && (
-              <span
-                className="inline-block w-[2px] h-[1.1em] bg-white align-middle ml-[2px] animate-blink"
-                aria-hidden="true"
-              />
-            )}
+            Entretien, diagnostic et réparation automobile
+          </h1>
+
+          {/* 3. Short Subtitle */}
+          <p className="text-[15px] sm:text-[17px] md:text-[19px] text-white/70 leading-relaxed font-light mb-6 sm:mb-8 max-w-2xl">
+            Un entretien à prévoir, un voyant allumé ou un bruit inhabituel ? Notre équipe vous accompagne à Bastia pour diagnostiquer et entretenir votre véhicule en toute transparence.
           </p>
-        )}
 
-        {/* 
-          3. ACTION PILL BUTTONS
-          Visible 400ms after page load.
-        */}
-        <div
-          className={`flex flex-wrap gap-y-1 transition-all duration-400 ease-out ${
-            buttonsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-          }`}
-        >
-          {/* WHITE PILL BUTTON 1 */}
-          <button
-            type="button"
-            onClick={() => onSelectAction('rendez-vous')}
-            className="inline-flex items-center justify-center bg-white text-black border border-black/10 rounded-full text-[13px] sm:text-[15px] px-4 sm:px-5 py-[0.3em] mx-[0.2em] mb-[0.4em] whitespace-nowrap hover:bg-black hover:text-white transition-colors duration-200 cursor-pointer focus:outline-none"
-          >
-            <EditableText
-              as="span"
-              value={content.pillAppointment}
-              onChange={(val) => updateField('pillAppointment', val)}
-            />
-          </button>
-
-          {/* WHITE PILL BUTTON 2 */}
-          <button
-            type="button"
-            onClick={() => onSelectAction('services')}
-            className="inline-flex items-center justify-center bg-white text-black border border-black/10 rounded-full text-[13px] sm:text-[15px] px-4 sm:px-5 py-[0.3em] mx-[0.2em] mb-[0.4em] whitespace-nowrap hover:bg-black hover:text-white transition-colors duration-200 cursor-pointer focus:outline-none"
-          >
-            <EditableText
-              as="span"
-              value={content.pillServices}
-              onChange={(val) => updateField('pillServices', val)}
-            />
-          </button>
-
-          {/* WHITE PILL BUTTON 3 */}
-          <button
-            type="button"
-            onClick={() => onSelectAction('localisation')}
-            className="inline-flex items-center justify-center bg-white text-black border border-black/10 rounded-full text-[13px] sm:text-[15px] px-4 sm:px-5 py-[0.3em] mx-[0.2em] mb-[0.4em] whitespace-nowrap hover:bg-black hover:text-white transition-colors duration-200 cursor-pointer focus:outline-none"
-          >
-            <EditableText
-              as="span"
-              value={content.pillLocation}
-              onChange={(val) => updateField('pillLocation', val)}
-            />
-          </button>
-
-          {/* WHITE PILL BUTTON 4 */}
-          <button
-            type="button"
-            onClick={() => onSelectAction('horaires')}
-            className="inline-flex items-center justify-center bg-white text-black border border-black/10 rounded-full text-[13px] sm:text-[15px] px-4 sm:px-5 py-[0.3em] mx-[0.2em] mb-[0.4em] whitespace-nowrap hover:bg-black hover:text-white transition-colors duration-200 cursor-pointer focus:outline-none"
-          >
-            <EditableText
-              as="span"
-              value={content.pillHours}
-              onChange={(val) => updateField('pillHours', val)}
-            />
-          </button>
-
-          {/* OUTLINE PILL BUTTON: Phone call CTA */}
-          <button
-            type="button"
-            onClick={() => {
-              if (!isEditing) {
-                window.location.href = `tel:${content.phone}`;
-              }
-            }}
-            className="text-white bg-transparent border border-white rounded-full inline-flex items-center justify-center text-[13px] sm:text-[15px] px-4 sm:px-5 py-[0.3em] mx-[0.2em] mb-[0.4em] whitespace-nowrap gap-2 sm:gap-3 hover:bg-white hover:text-black transition-colors duration-200 cursor-pointer focus:outline-none"
-          >
-            <span>
-              <EditableText
-                as="span"
-                value={content.pillCallPrefix}
-                onChange={(val) => updateField('pillCallPrefix', val)}
-              />{' '}
-              <EditableText
-                as="span"
-                value={content.phoneDisplay}
-                onChange={(val) => {
-                  updateField('phoneDisplay', val);
-                  updateField('phone', val.replace(/\s+/g, ''));
-                }}
-              />
-            </span>
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
+          {/* 4. Two Actions Maximum (Full-width on mobile, side-by-side on sm+) */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-2 sm:mb-0">
+            <button
+              type="button"
+              onClick={() => onSelectAction('rendez-vous')}
+              className="w-full sm:w-auto min-h-[50px] inline-flex items-center justify-center gap-2.5 bg-white text-black hover:bg-neutral-200 active:bg-neutral-300 font-semibold text-[15px] sm:text-[16px] px-6 sm:px-7 py-3 rounded-full transition-all duration-200 shadow-md cursor-pointer"
             >
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-            </svg>
-          </button>
+              <Calendar className="w-4 h-4" />
+              <span>Prendre rendez-vous</span>
+            </button>
+
+            <a
+              href={`tel:${content.phone}`}
+              className="w-full sm:w-auto min-h-[50px] inline-flex items-center justify-center gap-2.5 bg-white/[0.08] hover:bg-white/[0.14] active:bg-white/[0.2] border border-white/15 hover:border-white/30 text-white font-medium text-[15px] sm:text-[16px] px-6 py-3 rounded-full transition-all duration-200"
+            >
+              <Phone className="w-4 h-4 text-emerald-400" />
+              <span>Appeler le garage</span>
+            </a>
+          </div>
+
+          {/* 5. Micro reassurance tags on desktop */}
+          <div className="hidden sm:flex mt-8 pt-6 border-t border-white/[0.08] items-center gap-6 text-xs text-white/50">
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-white/70" />
+              Toutes marques prises en charge
+            </span>
+            <span className="flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-white/70" />
+              Furiani — Bastia
+            </span>
+          </div>
+        </div>
+
+        {/* 6. MEDIA CARD (Displayed BELOW text & actions on mobile, beside on desktop) */}
+        <div className="lg:col-span-5 mt-2 sm:mt-4 lg:mt-0">
+          <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 bg-[#0d0f14] shadow-xl sm:shadow-2xl aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3] group">
+            {/* Embedded video */}
+            <video
+              ref={videoRef}
+              src="/hero-video.mp4"
+              className="w-full h-full object-cover"
+              muted
+              playsInline
+              loop
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+            />
+
+            {/* Gradient vignette */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30 pointer-events-none" />
+
+            {/* Top Bar inside media card */}
+            <div className="absolute top-3 left-3 right-3 sm:top-4 sm:left-4 sm:right-4 flex items-center justify-between text-xs">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-white/90">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="text-[11px] sm:text-xs">Atelier mécanique</span>
+              </div>
+
+              {/* Play / Pause toggle */}
+              <button
+                type="button"
+                onClick={toggleVideoPlay}
+                className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 active:bg-black backdrop-blur-md border border-white/20 text-white flex items-center justify-center transition-all cursor-pointer focus:outline-none"
+                aria-label={isPlaying ? 'Mettre la vidéo en pause' : 'Lire la vidéo'}
+              >
+                {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-white ml-0.5" />}
+              </button>
+            </div>
+
+            {/* Bottom caption inside media card */}
+            <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-black/65 backdrop-blur-md border border-white/10 text-white/90 flex items-center justify-between">
+              <div>
+                <p className="text-[12.5px] sm:text-[13px] font-medium text-white leading-tight">Centre Auto JCR</p>
+                <p className="text-[10.5px] sm:text-[11px] text-white/50">Furiani · 20600 Bastia</p>
+              </div>
+              <span className="text-[11px] font-mono text-amber-300">★ 4,8 / 5</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
