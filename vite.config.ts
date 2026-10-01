@@ -40,7 +40,38 @@ function videoSavePlugin(): Plugin {
   };
 }
 
+/**
+ * Bundles src/worker.ts to dist/_worker.js and writes dist/.assetsignore
+ */
+function cloudflareWorkerPlugin(): Plugin {
+  return {
+    name: 'cloudflare-worker-plugin',
+    closeBundle: async () => {
+      try {
+        const esbuild = await import('esbuild');
+        const distDir = path.resolve(process.cwd(), 'dist');
+        if (!fs.existsSync(distDir)) {
+          fs.mkdirSync(distDir, { recursive: true });
+        }
 
+        await esbuild.build({
+          entryPoints: [path.resolve(process.cwd(), 'src/worker.ts')],
+          outfile: path.resolve(distDir, '_worker.js'),
+          bundle: true,
+          format: 'esm',
+          platform: 'browser',
+          target: 'es2022',
+          minify: true,
+        });
+
+        fs.writeFileSync(path.resolve(distDir, '.assetsignore'), '_worker.js\n', 'utf-8');
+        console.log('✓ Generated dist/_worker.js and dist/.assetsignore');
+      } catch (err) {
+        console.error('Failed in cloudflareWorkerPlugin:', err);
+      }
+    },
+  };
+}
 /**
  * Local development middleware proxying requests through the universal cloudHandler.
  */
@@ -103,6 +134,7 @@ export default defineConfig(() => {
       tailwindcss(),
       videoSavePlugin(),
       devApiPlugin(),
+      cloudflareWorkerPlugin(),
     ],
     resolve: {
       alias: {
