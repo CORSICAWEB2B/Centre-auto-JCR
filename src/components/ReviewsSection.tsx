@@ -12,7 +12,7 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ onNavigateAppoin
   const displayReviews = (content.reviews || []).slice(0, 3);
 
   const googleMapsReviewsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    `${content.brandName} Furiani Bastia avis`
+    `${content.brandName} ${content.addressLine1} ${content.addressLine2} ${content.addressLine3}`
   )}`;
 
   return (
