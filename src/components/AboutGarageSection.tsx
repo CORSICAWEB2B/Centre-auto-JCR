@@ -1,6 +1,7 @@
 import React from 'react';
 import { ShieldCheck, HeartHandshake, Navigation } from 'lucide-react';
 import { useSiteContent } from '../context/SiteContentContext';
+import { ScrollReveal } from './ScrollReveal';
 
 interface AboutGarageSectionProps {
   onNavigateContact?: () => void;
@@ -18,7 +19,7 @@ export const AboutGarageSection: React.FC<AboutGarageSectionProps> = ({ onNaviga
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
           {/* LEFT: EDITORIAL COPY */}
-          <div className="lg:col-span-6">
+          <ScrollReveal direction="up" distance={20} duration={650} className="lg:col-span-6">
             <div className="inline-flex items-center gap-2 text-[11px] sm:text-xs uppercase tracking-wider text-white/50 mb-2.5 sm:mb-3">
               <span className="w-1.5 h-1.5 rounded-full bg-white/60" />
               <span>L’atelier mécanique</span>
@@ -66,10 +67,10 @@ export const AboutGarageSection: React.FC<AboutGarageSectionProps> = ({ onNaviga
                 </div>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
 
           {/* RIGHT: STRUCTURED WORKSHOP IDENTITY CARD */}
-          <div className="lg:col-span-6">
+          <ScrollReveal direction="up" distance={24} delay={100} duration={700} className="lg:col-span-6">
             <div className="rounded-2xl sm:rounded-3xl bg-[#0f1117] border border-white/[0.08] p-5 sm:p-8 lg:p-9 relative overflow-hidden shadow-xl sm:shadow-2xl">
               <div className="flex items-center justify-between pb-5 border-b border-white/[0.08]">
                 <div>
@@ -143,7 +144,7 @@ export const AboutGarageSection: React.FC<AboutGarageSectionProps> = ({ onNaviga
                 </a>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

@@ -14,6 +14,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useSiteContent, ServiceItem } from '../context/SiteContentContext';
+import { ScrollReveal } from './ScrollReveal';
 
 interface ServicesBentoProps {
   onSelectAppointment: (serviceName?: string) => void;
@@ -197,7 +198,7 @@ export const ServicesBento: React.FC<ServicesBentoProps> = ({
   return (
     <section id="services" className="relative z-10 py-14 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* SECTION HEADER */}
-      <div className="max-w-3xl mb-8 sm:mb-14">
+      <ScrollReveal direction="up" distance={20} duration={650} className="max-w-3xl mb-8 sm:mb-14">
         <div className="inline-flex items-center gap-2 text-[11px] sm:text-xs uppercase tracking-wider text-white/50 mb-2.5 sm:mb-3">
           <span className="w-1.5 h-1.5 rounded-full bg-white/60" />
           <span>Atelier mécanique · Bastia</span>
@@ -211,7 +212,7 @@ export const ServicesBento: React.FC<ServicesBentoProps> = ({
         <p className="text-[14.5px] sm:text-[17px] text-white/65 leading-relaxed font-light">
           Du simple entretien périodique aux réparations mécaniques les plus poussées, notre atelier à Furiani prend en charge l’ensemble des besoins de votre véhicule.
         </p>
-      </div>
+      </ScrollReveal>
 
       {/* MOBILE-FIRST BENTO GRID */}
       {/* 
@@ -220,56 +221,64 @@ export const ServicesBento: React.FC<ServicesBentoProps> = ({
         - 12 columns on desktop (lg:grid-cols-12)
       */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3.5 sm:gap-5 lg:gap-6">
-        {bentoServices.map((service) => {
+        {bentoServices.map((service, index) => {
           const IconComponent = service.icon;
           return (
-            <div
+            <ScrollReveal
               key={service.id}
-              onClick={() => handleOpenDetail(service)}
-              className={`${service.gridSpan} rounded-2xl sm:rounded-3xl bg-[#0f1117] active:bg-[#141720] hover:bg-[#141720] border border-white/[0.08] hover:border-white/20 p-5 sm:p-7 lg:p-8 flex flex-col justify-between transition-all duration-200 group cursor-pointer shadow-lg active:scale-[0.99] relative overflow-hidden`}
+              className={`${service.gridSpan} flex flex-col`}
+              delay={index * 50}
+              direction="up"
+              distance={16}
+              duration={600}
             >
-              <div>
-                {/* Top bar with icon & num */}
-                <div className="flex items-center justify-between gap-3 mb-4 sm:mb-6">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/[0.06] group-hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors flex-shrink-0">
-                    <IconComponent className="w-5 h-5 text-white/90" />
-                  </div>
+              <div
+                onClick={() => handleOpenDetail(service)}
+                className="w-full h-full rounded-2xl sm:rounded-3xl bg-[#0f1117] active:bg-[#141720] hover:bg-[#141720] border border-white/[0.08] hover:border-white/20 p-5 sm:p-7 lg:p-8 flex flex-col justify-between transition-all duration-200 group cursor-pointer shadow-lg active:scale-[0.99] relative overflow-hidden"
+              >
+                <div>
+                  {/* Top bar with icon & num */}
+                  <div className="flex items-center justify-between gap-3 mb-4 sm:mb-6">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/[0.06] group-hover:bg-white/10 border border-white/10 flex items-center justify-center text-white transition-colors flex-shrink-0">
+                      <IconComponent className="w-5 h-5 text-white/90" />
+                    </div>
 
-                  <div className="flex items-center gap-2">
-                    {service.badge && (
-                      <span className="text-[10.5px] sm:text-[11px] font-medium text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full">
-                        {service.badge}
+                    <div className="flex items-center gap-2">
+                      {service.badge && (
+                        <span className="text-[10.5px] sm:text-[11px] font-medium text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full">
+                          {service.badge}
+                        </span>
+                      )}
+                      <span className="text-[12px] sm:text-[13px] font-mono text-white/40">
+                        {service.num}
                       </span>
-                    )}
-                    <span className="text-[12px] sm:text-[13px] font-mono text-white/40">
-                      {service.num}
-                    </span>
+                    </div>
+                  </div>
+
+                  {/* Title */}
+                  <h3
+                    className="text-[18px] sm:text-[21px] lg:text-[23px] font-medium text-white tracking-tight mb-2 group-hover:text-white transition-colors leading-snug"
+                    style={{ fontFamily: 'var(--font-heading)' }}
+                  >
+                    {service.name}
+                  </h3>
+
+                  {/* Short phrase on mobile, full description on desktop */}
+                  <p className="text-[13.5px] sm:text-[15px] text-white/60 font-light leading-relaxed mb-4 sm:mb-6">
+                    <span className="sm:hidden">{service.shortPhrase}</span>
+                    <span className="hidden sm:inline">{service.description}</span>
+                  </p>
+                </div>
+
+                {/* Action Prompt */}
+                <div className="pt-3.5 border-t border-white/[0.06] flex items-center justify-between text-[13px] sm:text-sm text-white/75 group-hover:text-white transition-colors">
+                  <span className="font-medium">En savoir plus</span>
+                  <div className="w-7 h-7 rounded-full bg-white/5 group-hover:bg-white text-white group-hover:text-black flex items-center justify-center transition-all duration-200">
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </div>
                 </div>
-
-                {/* Title */}
-                <h3
-                  className="text-[18px] sm:text-[21px] lg:text-[23px] font-medium text-white tracking-tight mb-2 group-hover:text-white transition-colors leading-snug"
-                  style={{ fontFamily: 'var(--font-heading)' }}
-                >
-                  {service.name}
-                </h3>
-
-                {/* Short phrase on mobile, full description on desktop */}
-                <p className="text-[13.5px] sm:text-[15px] text-white/60 font-light leading-relaxed mb-4 sm:mb-6">
-                  <span className="sm:hidden">{service.shortPhrase}</span>
-                  <span className="hidden sm:inline">{service.description}</span>
-                </p>
               </div>
-
-              {/* Action Prompt */}
-              <div className="pt-3.5 border-t border-white/[0.06] flex items-center justify-between text-[13px] sm:text-sm text-white/75 group-hover:text-white transition-colors">
-                <span className="font-medium">En savoir plus</span>
-                <div className="w-7 h-7 rounded-full bg-white/5 group-hover:bg-white text-white group-hover:text-black flex items-center justify-center transition-all duration-200">
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </div>
-              </div>
-            </div>
+            </ScrollReveal>
           );
         })}
       </div>

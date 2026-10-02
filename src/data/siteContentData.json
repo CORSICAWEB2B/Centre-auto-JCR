@@ -1,0 +1,108 @@
+{
+  "brandName": "Centre Auto JCR",
+  "phone": "0495334730",
+  "phoneDisplay": "04 95 33 47 30",
+  "introLine1": "Centre Auto JCR, Bastia",
+  "introLine2": "Entretien, réparation et diagnostic automobile",
+  "typewriterText": "Un bruit étrange, un voyant allumé ou simplement votre entretien à prévoir ? Dites-nous ce qu’il se passe.",
+  "pillAppointment": "Prendre rendez-vous",
+  "pillServices": "Voir nos services",
+  "pillLocation": "Nous trouver",
+  "pillHours": "Voir les horaires",
+  "pillCallPrefix": "Appeler :",
+  "addressLine1": "Zone industrielle de Furiani",
+  "addressLine2": "Rue François Lota",
+  "addressLine3": "20600 Bastia",
+  "hoursNote": "Accueil avec ou sans rendez-vous selon la nature des interventions et la disponibilité de l’atelier.",
+  "servicesTitle": "Services & Prestations",
+  "servicesSubtitle": "Un savoir-faire mécanique complet pour tous types de véhicules, assuré par des techniciens qualifiés à Bastia.",
+  "appointmentTitle": "Prendre rendez-vous",
+  "appointmentSubtitle": "Indiquez-nous la nature de votre besoin ou contactez-nous directement par téléphone.",
+  "locationTitle": "Accès & Coordonnées",
+  "hoursTitle": "Horaires d’ouverture",
+  "services": [
+    {
+      "id": "entretien",
+      "num": "01",
+      "name": "Entretien automobile",
+      "description": "Vidange, révision constructeur, remplacement des filtres et contrôles des niveaux de sécurité."
+    },
+    {
+      "id": "mecanique",
+      "num": "02",
+      "name": "Réparation mécanique",
+      "description": "Intervention sur moteur, embrayage, boîte de vitesses, suspensions et organes de roulement."
+    },
+    {
+      "id": "pneumatiques",
+      "num": "03",
+      "name": "Pneumatiques",
+      "description": "Montage, équilibrage, géométrie des trains roulants, contrôle d’usure et remplacement."
+    },
+    {
+      "id": "freinage",
+      "num": "04",
+      "name": "Freinage",
+      "description": "Disques, plaquettes, étriers, liquide de frein et contrôle d’efficacité du circuit hydraulique."
+    },
+    {
+      "id": "distribution",
+      "num": "05",
+      "name": "Distribution",
+      "description": "Remplacement kit courroie de distribution, pompe à eau et courroie d’accessoires selon préconisations."
+    },
+    {
+      "id": "diagnostic",
+      "num": "06",
+      "name": "Diagnostic automobile",
+      "description": "Recherche de pannes électroniques, lecture des calculateurs et identification des voyants moteur."
+    },
+    {
+      "id": "climatisation",
+      "num": "07",
+      "name": "Climatisation",
+      "description": "Recharge en fluide frigorigène, détection de fuite, traitement antibactérien et filtre habitacle."
+    }
+  ],
+  "openingHours": [
+    { "day": "Lundi", "hours": "08:30–18:30", "open": true },
+    { "day": "Mardi", "hours": "08:30–18:30", "open": true },
+    { "day": "Mercredi", "hours": "08:30–18:30", "open": true },
+    { "day": "Jeudi", "hours": "08:30–18:30", "open": true },
+    { "day": "Vendredi", "hours": "08:30–18:30", "open": true },
+    { "day": "Samedi", "hours": "Fermé", "open": false },
+    { "day": "Dimanche", "hours": "Fermé", "open": false }
+  ],
+  "reviewsTitle": "Avis clients certifiés",
+  "reviewsSubtitle": "Retours d’expérience de nos clients sur la qualité du diagnostic, l’accueil et le suivi mécanique au Centre Auto JCR.",
+  "reviewsRatingText": "4,8/5 sur Google",
+  "reviews": [
+    {
+      "id": "rev-1",
+      "author": "Client Google",
+      "date": "Récemment",
+      "rating": 5,
+      "text": "Garage très sérieux et professionnel à Furiani. Prise en charge rapide et diagnostic clair.",
+      "source": "Google",
+      "badge": "Avis vérifié"
+    },
+    {
+      "id": "rev-2",
+      "author": "Client Google",
+      "date": "Récemment",
+      "rating": 5,
+      "text": "Excellent accueil, travail de qualité et tarifs très corrects. Une équipe de confiance à Bastia.",
+      "source": "Google",
+      "badge": "Avis vérifié"
+    },
+    {
+      "id": "rev-3",
+      "author": "Client Google",
+      "date": "Récemment",
+      "rating": 5,
+      "text": "Réparation impeccable et conseils avisés. Je recommande le Centre Auto JCR sans hésiter.",
+      "source": "Google",
+      "badge": "Avis vérifié"
+    }
+  ]
+}
