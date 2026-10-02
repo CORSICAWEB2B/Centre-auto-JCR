@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, ShieldCheck, HeartHandshake, Phone } from 'lucide-react';
+import { ShieldCheck, HeartHandshake, Navigation } from 'lucide-react';
 import { useSiteContent } from '../context/SiteContentContext';
 
 interface AboutGarageSectionProps {
@@ -8,6 +8,10 @@ interface AboutGarageSectionProps {
 
 export const AboutGarageSection: React.FC<AboutGarageSectionProps> = ({ onNavigateContact }) => {
   const { content } = useSiteContent();
+
+  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    `${content.brandName} ${content.addressLine1} ${content.addressLine2} ${content.addressLine3}`
+  )}`;
 
   return (
     <section id="le-garage" className="relative z-10 py-14 sm:py-20 lg:py-28 px-4 sm:px-6 lg:px-8 border-t border-white/[0.08] bg-[#07080a]">
@@ -61,28 +65,6 @@ export const AboutGarageSection: React.FC<AboutGarageSectionProps> = ({ onNaviga
                   </p>
                 </div>
               </div>
-            </div>
-
-            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              <a
-                href="#contact"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onNavigateContact?.();
-                }}
-                className="min-h-[48px] inline-flex items-center justify-center gap-2 bg-white text-black active:bg-neutral-200 text-[14px] font-medium px-5 py-2.5 rounded-full transition-colors cursor-pointer"
-              >
-                <span>Localiser l’atelier</span>
-                <MapPin className="w-3.5 h-3.5" />
-              </a>
-
-              <a
-                href={`tel:${content.phone}`}
-                className="min-h-[48px] inline-flex items-center justify-center gap-2 text-[14px] text-white/70 hover:text-white underline underline-offset-4 transition-colors font-mono"
-              >
-                <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                <span>{content.phoneDisplay}</span>
-              </a>
             </div>
           </div>
 
@@ -142,14 +124,23 @@ export const AboutGarageSection: React.FC<AboutGarageSectionProps> = ({ onNaviga
                 </div>
               </div>
 
-              {/* Location indication frame */}
+              {/* Location indication frame with Google Maps */}
               <div className="mt-2 pt-5 border-t border-white/[0.08] rounded-xl sm:rounded-2xl bg-white/[0.02] border border-dashed border-white/10 p-4 text-center">
                 <p className="text-[12.5px] sm:text-[13px] text-white/70 font-medium mb-1">
                   Atelier physique situé à Furiani
                 </p>
-                <p className="text-[11px] sm:text-[11.5px] text-white/40 max-w-sm mx-auto">
+                <p className="text-[11px] sm:text-[11.5px] text-white/40 max-w-sm mx-auto mb-3">
                   Accès facile depuis la voie rapide Bastia — Casamozza. Parking client disponible sur place.
                 </p>
+                <a
+                  href={googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="min-h-[44px] inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 active:bg-white/20 border border-white/15 text-white text-[12.5px] sm:text-[13px] font-medium py-2 px-5 rounded-full transition-colors cursor-pointer"
+                >
+                  <Navigation className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Nous trouver (Google Maps)</span>
+                </a>
               </div>
             </div>
           </div>

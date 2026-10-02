@@ -17,6 +17,7 @@ import { useSiteContent, ServiceItem } from '../context/SiteContentContext';
 
 interface ServicesBentoProps {
   onSelectAppointment: (serviceName?: string) => void;
+  onDetailStateChange?: (isOpen: boolean) => void;
 }
 
 interface ServiceDetail extends ServiceItem {
@@ -28,21 +29,38 @@ interface ServiceDetail extends ServiceItem {
   isMainHero?: boolean;
 }
 
-export const ServicesBento: React.FC<ServicesBentoProps> = ({ onSelectAppointment }) => {
+export const ServicesBento: React.FC<ServicesBentoProps> = ({
+  onSelectAppointment,
+  onDetailStateChange,
+}) => {
   const { content } = useSiteContent();
   const [selectedService, setSelectedService] = useState<ServiceDetail | null>(null);
 
-  // Prevent body scroll when detail sheet is open
+  // Prevent body scroll and notify parent to hide/show chatbot
   useEffect(() => {
     if (selectedService) {
       document.body.style.overflow = 'hidden';
+      onDetailStateChange?.(true);
     } else {
       document.body.style.overflow = '';
+      onDetailStateChange?.(false);
     }
     return () => {
       document.body.style.overflow = '';
+      onDetailStateChange?.(false);
     };
-  }, [selectedService]);
+  }, [selectedService, onDetailStateChange]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selectedService) {
+        setSelectedService(null);
+        onDetailStateChange?.(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedService, onDetailStateChange]);
 
   const bentoServices: ServiceDetail[] = [
     {

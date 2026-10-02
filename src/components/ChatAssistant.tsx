@@ -28,11 +28,13 @@ const SUGGESTIONS = [
 interface ChatAssistantProps {
   isOpen?: boolean;
   onToggle?: () => void;
+  isHidden?: boolean;
 }
 
 export const ChatAssistant: React.FC<ChatAssistantProps> = ({
   isOpen: externalIsOpen,
   onToggle: externalOnToggle,
+  isHidden = false,
 }) => {
   const { content } = useSiteContent();
   const [internalIsOpen, setInternalIsOpen] = useState<boolean>(false);
@@ -215,7 +217,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
   };
 
   return (
-    <>
+    <div className={isHidden ? 'hidden' : undefined} aria-hidden={isHidden}>
       {/* 
         FLOATING LAUNCHER BUTTON:
         On mobile: positioned at bottom-[72px] right-3, clear of the sticky action bar!
@@ -411,6 +413,6 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };

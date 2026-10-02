@@ -20,6 +20,7 @@ import { MobileActionBar } from './components/MobileActionBar';
 function MainLayout() {
   const [chatOpen, setChatOpen] = useState<boolean>(false);
   const [selectedServiceForAppointment, setSelectedServiceForAppointment] = useState<string | undefined>(undefined);
+  const [isServiceDetailOpen, setIsServiceDetailOpen] = useState<boolean>(false);
 
   const handleNavigate = (targetId: string) => {
     const el = document.getElementById(targetId);
@@ -32,7 +33,7 @@ function MainLayout() {
     target: 'rendez-vous' | 'services' | 'localisation' | 'horaires' | 'avis'
   ) => {
     if (target === 'localisation') {
-      handleNavigate('contact');
+      handleNavigate('le-garage');
     } else {
       handleNavigate(target);
     }
@@ -56,10 +57,13 @@ function MainLayout() {
         <TrustBar onNavigateAvis={() => handleNavigate('avis')} />
 
         {/* 4. SERVICES EN GRILLE BENTO (Single column on mobile, bottom sheet detail) */}
-        <ServicesBento onSelectAppointment={handleSelectServiceAppointment} />
+        <ServicesBento
+          onSelectAppointment={handleSelectServiceAppointment}
+          onDetailStateChange={setIsServiceDetailOpen}
+        />
 
         {/* 5. PRÉSENTATION DU GARAGE : CENTRE AUTO JCR */}
-        <AboutGarageSection onNavigateContact={() => handleNavigate('contact')} />
+        <AboutGarageSection onNavigateContact={() => handleNavigate('le-garage')} />
 
         {/* 6. AVIS CLIENTS CERTIFIÉS (Touch scroll-snap carousel on mobile) */}
         <ReviewsSection onNavigateAppointment={() => handleNavigate('rendez-vous')} />
@@ -67,15 +71,19 @@ function MainLayout() {
         {/* 7. PRISE DE RENDEZ-VOUS (16px inputs, single-column mobile form, touch RGPD checkbox) */}
         <AppointmentSection initialServiceName={selectedServiceForAppointment} />
 
-        {/* 8. HORAIRES / LOCALISATION / CONTACT (3 clean mobile cards with direct call & map buttons) */}
-        <ContactLocationSection />
+        {/* 8. HORAIRES D'OUVERTURE DE L'ATELIER */}
+        <ContactLocationSection onNavigateAppointment={() => handleNavigate('rendez-vous')} />
       </main>
 
       {/* 9. FOOTER MINIMALISTE (Vertical mobile stack with clearance for action bar) */}
       <Footer onNavigate={handleNavigate} />
 
       {/* 10. ASSISTANT JCR (Gemini Chatbot, safe-area positioning above mobile bar) */}
-      <ChatAssistant isOpen={chatOpen} onToggle={() => setChatOpen((prev) => !prev)} />
+      <ChatAssistant
+        isOpen={chatOpen}
+        onToggle={() => setChatOpen((prev) => !prev)}
+        isHidden={isServiceDetailOpen}
+      />
 
       {/* 11. MOBILE BOTTOM ACTION BAR (Strictly mobile only, auto-hides when chat is open) */}
       <MobileActionBar
