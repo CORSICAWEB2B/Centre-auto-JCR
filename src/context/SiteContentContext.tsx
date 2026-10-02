@@ -54,9 +54,51 @@ export interface SiteContent {
   reviews: ReviewItem[];
 }
 
-export const DEFAULT_SITE_CONTENT: SiteContent = defaultData as unknown as SiteContent;
+export const AUTHENTIC_REVIEWS: ReviewItem[] = [
+  {
+    id: 'rev-1',
+    author: 'Ange-antoine Ferrandi',
+    date: 'Il y a 2 semaines',
+    rating: 5,
+    text: "J'ai trouvé un garage sérieux tenu par un patron jeune, compétent et très sympathique.J'y suis allé pour une vidange de boîte automatique sur une Mercedes CLK .Le travail a été fait sérieusement et à un prix très correct.Il n'a pas manqué de me diagnostiquer quelques problèmes que je connaissais sur ma voiture .Je suis parti rassuré et content d'avoir trouvé un garage sérieux. Je le recommande vivement!",
+    source: 'Google',
+    badge: 'Avis vérifié',
+  },
+  {
+    id: 'rev-2',
+    author: 'Radek Gothard',
+    date: 'Il y a 1 mois',
+    rating: 5,
+    text: "En descendant du bateau, nous avons trouvé un boulon dans la roue avant de notre voiture. La roue tournait au ralenti, alors je suis allé au Centre Auto JCR. L'accueil du mécanicien, souriant et très sympathique, a été impeccable. La roue a été réparée en 10 minutes et nous avons pu reprendre nos vacances en Corse. Un service irréprochable et une réactivité exemplaire. Merci !",
+    source: 'Google',
+    badge: 'Avis vérifié',
+  },
+  {
+    id: 'rev-3',
+    author: 'D Müller',
+    date: 'Il y a 2 mois',
+    rating: 5,
+    text: "Nous étions en pleine préparation de nos vacances en Corse, mais mon porte-vélos en a décidé autrement. Mon feu arrière droit a cessé de fonctionner et les fils dénudés étaient un vrai fouillis.\n\nDans ce garage, nous avons bénéficié d'une assistance immédiate, aimable et efficace. Avec patience, expertise et une intuition quasi-détective, ils ont démêlé, testé et reconnecté les fils correctement. Finalement, tout a fonctionné à merveille ! Un service chaleureux, une aide compétente et une persévérance admirable. Grâce à ce garage, nous avons pu poursuivre nos vacances sans encombre et reprendre la route en toute sécurité. Je le recommande vivement ! Un grand merci ! :-)))",
+    source: 'Google',
+    badge: 'Avis vérifié',
+  },
+  {
+    id: 'rev-4',
+    author: 'Lucia Weis',
+    date: 'Il y a 3 mois',
+    rating: 5,
+    text: "Nous sommes un groupe de campeuses, et l'une d'entre nous avait un problème avec le support de son porte-vélos. Il l'a réparé avec patience et persévérance, et tout fonctionne parfaitement. Le prix était raisonnable, il était incroyablement sympathique, et le travail a été bien fait. Nous étions toutes les quatre ravies.",
+    source: 'Google',
+    badge: 'Avis vérifié',
+  },
+];
 
-const STORAGE_KEY = 'centre_auto_jcr_content_v1';
+export const DEFAULT_SITE_CONTENT: SiteContent = {
+  ...(defaultData as unknown as SiteContent),
+  reviews: AUTHENTIC_REVIEWS,
+};
+
+const STORAGE_KEY = 'centre_auto_jcr_content_v2';
 
 interface SiteContentContextType {
   content: SiteContent;
@@ -73,10 +115,28 @@ const SiteContentContext = createContext<SiteContentContextType | undefined>(und
 
 export const SiteContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [content, setContent] = useState<SiteContent>(() => {
+    // Purge legacy storage from previous test deployments that might hold fake reviews
+    try {
+      localStorage.removeItem('centre_auto_jcr_content_v1');
+    } catch {
+      // Ignore
+    }
+
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        return { ...DEFAULT_SITE_CONTENT, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        const VALID_AUTHORS = new Set(AUTHENTIC_REVIEWS.map((r) => r.author));
+        if (parsed.reviews && Array.isArray(parsed.reviews)) {
+          // Whitelist: strictly allow only verified authentic reviews
+          parsed.reviews = parsed.reviews.filter((r: any) => VALID_AUTHORS.has(r.author));
+          if (parsed.reviews.length === 0) {
+            parsed.reviews = AUTHENTIC_REVIEWS;
+          }
+        } else {
+          parsed.reviews = AUTHENTIC_REVIEWS;
+        }
+        return { ...DEFAULT_SITE_CONTENT, ...parsed };
       }
     } catch {
       // Fallback
