@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import defaultData from '../data/siteContentData.json';
 
 export interface ServiceItem {
   id: string;
@@ -53,135 +54,7 @@ export interface SiteContent {
   reviews: ReviewItem[];
 }
 
-export const DEFAULT_SITE_CONTENT: SiteContent = {
-  brandName: 'Centre Auto JCR',
-  phone: '0495334730',
-  phoneDisplay: '04 95 33 47 30',
-  introLine1: 'Centre Auto JCR, Bastia',
-  introLine2: 'Entretien, réparation et diagnostic automobile',
-  typewriterText:
-    'Un bruit étrange, un voyant allumé ou simplement votre entretien à prévoir ? Dites-nous ce qu’il se passe.',
-  pillAppointment: 'Prendre rendez-vous',
-  pillServices: 'Voir nos services',
-  pillLocation: 'Nous trouver',
-  pillHours: 'Voir les horaires',
-  pillCallPrefix: 'Appeler :',
-  addressLine1: 'Zone industrielle de Furiani',
-  addressLine2: 'Rue François Lota',
-  addressLine3: '20600 Bastia',
-  hoursNote:
-    'Accueil avec ou sans rendez-vous selon la nature des interventions et la disponibilité de l’atelier.',
-  servicesTitle: 'Services & Prestations',
-  servicesSubtitle:
-    'Un savoir-faire mécanique complet pour tous types de véhicules, assuré par des techniciens qualifiés à Bastia.',
-  appointmentTitle: 'Prendre rendez-vous',
-  appointmentSubtitle:
-    'Indiquez-nous la nature de votre besoin ou contactez-nous directement par téléphone.',
-  locationTitle: 'Accès & Coordonnées',
-  hoursTitle: 'Horaires d’ouverture',
-  services: [
-    {
-      id: 'entretien',
-      num: '01',
-      name: 'Entretien automobile',
-      description:
-        'Vidange, révision constructeur, remplacement des filtres et contrôles des niveaux de sécurité.',
-    },
-    {
-      id: 'mecanique',
-      num: '02',
-      name: 'Réparation mécanique',
-      description:
-        'Intervention sur moteur, embrayage, boîte de vitesses, suspensions et organes de roulement.',
-    },
-    {
-      id: 'pneumatiques',
-      num: '03',
-      name: 'Pneumatiques',
-      description:
-        'Montage, équilibrage, géométrie des trains roulants, contrôle d’usure et remplacement.',
-    },
-    {
-      id: 'freinage',
-      num: '04',
-      name: 'Freinage',
-      description:
-        'Disques, plaquettes, étriers, liquide de frein et contrôle d’efficacité du circuit hydraulique.',
-    },
-    {
-      id: 'distribution',
-      num: '05',
-      name: 'Distribution',
-      description:
-        'Remplacement kit courroie de distribution, pompe à eau et courroie d’accessoires selon préconisations.',
-    },
-    {
-      id: 'diagnostic',
-      num: '06',
-      name: 'Diagnostic automobile',
-      description:
-        'Recherche de pannes électroniques, lecture des calculateurs et identification des voyants moteur.',
-    },
-    {
-      id: 'climatisation',
-      num: '07',
-      name: 'Climatisation',
-      description:
-        'Recharge en fluide frigorigène, détection de fuite, traitement antibactérien et filtre habitacle.',
-    },
-  ],
-  openingHours: [
-    { day: 'Lundi', hours: '08:30–18:30', open: true },
-    { day: 'Mardi', hours: '08:30–18:30', open: true },
-    { day: 'Mercredi', hours: '08:30–18:30', open: true },
-    { day: 'Jeudi', hours: '08:30–18:30', open: true },
-    { day: 'Vendredi', hours: '08:30–18:30', open: true },
-    { day: 'Samedi', hours: 'Fermé', open: false },
-    { day: 'Dimanche', hours: 'Fermé', open: false },
-  ],
-  reviewsTitle: 'Avis clients certifiés',
-  reviewsSubtitle:
-    'Retours d’expérience de nos clients sur la qualité du diagnostic, l’accueil et le suivi mécanique au Centre Auto JCR.',
-  reviewsRatingText: '4,8/5 sur Google',
-  reviews: [
-    {
-      id: 'rev-1',
-      author: 'Antonia M.',
-      date: 'Il y a 2 semaines',
-      rating: 5,
-      text: 'Prise en charge rapide et diagnostic très honnête. Pas de mauvaise surprise sur la facture, équipe sérieuse et accueillante. Je recommande les yeux fermés à Bastia !',
-      source: 'Google',
-      badge: 'Avis vérifié',
-    },
-    {
-      id: 'rev-2',
-      author: 'Sébastien L.',
-      date: 'Il y a 1 mois',
-      rating: 5,
-      text: 'Très bon garage à Furiani. Révision complète et remplacement des freins effectués dans la journée. Professionnalisme au top et explications limpides.',
-      source: 'Google',
-      badge: 'Avis vérifié',
-    },
-    {
-      id: 'rev-3',
-      author: 'Marie-Claire P.',
-      date: 'Il y a 2 mois',
-      rating: 5,
-      text: 'Dépannage d’urgence pour un voyant moteur avant de prendre le ferry. Ils ont été réactifs, rassurants et ultra pro. Un grand merci à toute l’équipe !',
-      source: 'Google',
-      badge: 'Avis vérifié',
-    },
-    {
-      id: 'rev-4',
-      author: 'David G.',
-      date: 'Il y a 3 mois',
-      rating: 5,
-      text: 'Client fidèle depuis plusieurs années. Toujours arrangeants, tarifs justes et travail soigné sur ma boîte de vitesses et ma courroie de distribution.',
-      source: 'Google',
-      badge: 'Avis vérifié',
-    },
-  ],
-};
+export const DEFAULT_SITE_CONTENT: SiteContent = defaultData as unknown as SiteContent;
 
 const STORAGE_KEY = 'centre_auto_jcr_content_v1';
 
@@ -213,10 +86,32 @@ export const SiteContentProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  // Save to localStorage on change
+  // Sync client-side localStorage to persistent disk file so GitHub and Cloudflare have authentic content
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        fetch('/api/sync-content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: saved,
+        }).catch(() => {});
+      }
+    } catch {
+      // Ignore
+    }
+  }, []);
+
+  // Save to localStorage on change and sync to file in dev environment
+  useEffect(() => {
+    try {
+      const serialized = JSON.stringify(content);
+      localStorage.setItem(STORAGE_KEY, serialized);
+      fetch('/api/sync-content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: serialized,
+      }).catch(() => {});
     } catch {
       // Ignore quota errors
     }

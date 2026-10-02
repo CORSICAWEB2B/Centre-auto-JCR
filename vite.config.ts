@@ -40,6 +40,46 @@ function videoSavePlugin(): Plugin {
   };
 }
 
+function contentSyncPlugin(): Plugin {
+  return {
+    name: 'content-sync-plugin',
+    configureServer(server) {
+      server.middlewares.use('/api/sync-content', (req, res) => {
+        if (req.method === 'POST') {
+          const chunks: Buffer[] = [];
+          req.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
+          req.on('end', () => {
+            try {
+              const bodyStr = Buffer.concat(chunks).toString('utf-8');
+              const data = JSON.parse(bodyStr);
+              if (data && typeof data === 'object') {
+                const dataDir = path.resolve(process.cwd(), 'src/data');
+                if (!fs.existsSync(dataDir)) {
+                  fs.mkdirSync(dataDir, { recursive: true });
+                }
+                const dataPath = path.resolve(dataDir, 'siteContentData.json');
+                fs.writeFileSync(dataPath, JSON.stringify(data, null, 2), 'utf-8');
+                console.log('✓ Successfully synced authentic site content to src/data/siteContentData.json');
+              }
+              res.setHeader('Content-Type', 'application/json');
+              res.statusCode = 200;
+              res.end(JSON.stringify({ success: true }));
+            } catch (err: any) {
+              console.error('Failed to sync content:', err);
+              res.setHeader('Content-Type', 'application/json');
+              res.statusCode = 500;
+              res.end(JSON.stringify({ error: err?.message || 'Failed to sync content' }));
+            }
+          });
+        } else {
+          res.statusCode = 405;
+          res.end('Method Not Allowed');
+        }
+      });
+    },
+  };
+}
+
 /**
  * Bundles src/worker.ts to dist/_worker.js and writes dist/.assetsignore
  */
@@ -133,6 +173,7 @@ export default defineConfig(() => {
       react(),
       tailwindcss(),
       videoSavePlugin(),
+      contentSyncPlugin(),
       devApiPlugin(),
       cloudflareWorkerPlugin(),
     ],
