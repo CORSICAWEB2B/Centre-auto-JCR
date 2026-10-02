@@ -2,7 +2,7 @@
   "brandName": "Centre Auto JCR",
   "phone": "0495334730",
   "phoneDisplay": "04 95 33 47 30",
-  "introLine1": "Centre Auto JCR, Bastia",
+  "introLine1": "Centre Auto JCR",
   "introLine2": "Entretien, réparation et diagnostic automobile",
   "typewriterText": "Un bruit étrange, un voyant allumé ou simplement votre entretien à prévoir ? Dites-nous ce qu’il se passe.",
   "pillAppointment": "Prendre rendez-vous",
@@ -65,13 +65,41 @@
     }
   ],
   "openingHours": [
-    { "day": "Lundi", "hours": "08:30–18:30", "open": true },
-    { "day": "Mardi", "hours": "08:30–18:30", "open": true },
-    { "day": "Mercredi", "hours": "08:30–18:30", "open": true },
-    { "day": "Jeudi", "hours": "08:30–18:30", "open": true },
-    { "day": "Vendredi", "hours": "08:30–18:30", "open": true },
-    { "day": "Samedi", "hours": "Fermé", "open": false },
-    { "day": "Dimanche", "hours": "Fermé", "open": false }
+    {
+      "day": "Lundi",
+      "hours": "08:30–18:30",
+      "open": true
+    },
+    {
+      "day": "Mardi",
+      "hours": "08:30–18:30",
+      "open": true
+    },
+    {
+      "day": "Mercredi",
+      "hours": "08:30–18:30",
+      "open": true
+    },
+    {
+      "day": "Jeudi",
+      "hours": "08:30–18:30",
+      "open": true
+    },
+    {
+      "day": "Vendredi",
+      "hours": "08:30–18:30",
+      "open": true
+    },
+    {
+      "day": "Samedi",
+      "hours": "Fermé",
+      "open": false
+    },
+    {
+      "day": "Dimanche",
+      "hours": "Fermé",
+      "open": false
+    }
   ],
   "reviewsTitle": "Avis clients certifiés",
   "reviewsSubtitle": "Retours d’expérience de nos clients sur la qualité du diagnostic, l’accueil et le suivi mécanique au Centre Auto JCR.",
@@ -79,28 +107,37 @@
   "reviews": [
     {
       "id": "rev-1",
-      "author": "Client Google",
-      "date": "Récemment",
+      "author": "Ange-antoine Ferrandi",
+      "date": "Il y a 2 semaines",
       "rating": 5,
-      "text": "Garage très sérieux et professionnel à Furiani. Prise en charge rapide et diagnostic clair.",
+      "text": "J'ai trouvé un garage sérieux tenu par un patron jeune, compétent et très sympathique.J'y suis allé pour une vidange de boîte automatique sur une Mercedes CLK .Le travail a été fait sérieusement et à un prix très correct.Il n'a pas manqué de me diagnostiquer quelques problèmes que je connaissais sur ma voiture .Je suis parti rassuré et content d'avoir trouvé un garage sérieux. Je le recommande vivement!",
       "source": "Google",
       "badge": "Avis vérifié"
     },
     {
       "id": "rev-2",
-      "author": "Client Google",
-      "date": "Récemment",
+      "author": "Radek Gothard",
+      "date": "Il y a 1 mois",
       "rating": 5,
-      "text": "Excellent accueil, travail de qualité et tarifs très corrects. Une équipe de confiance à Bastia.",
+      "text": "En descendant du bateau, nous avons trouvé un boulon dans la roue avant de notre voiture. La roue tournait au ralenti, alors je suis allé au Centre Auto JCR. L'accueil du mécanicien, souriant et très sympathique, a été impeccable. La roue a été réparée en 10 minutes et nous avons pu reprendre nos vacances en Corse. Un service irréprochable et une réactivité exemplaire. Merci !",
       "source": "Google",
       "badge": "Avis vérifié"
     },
     {
       "id": "rev-3",
-      "author": "Client Google",
-      "date": "Récemment",
+      "author": "Anne Croizet",
+      "date": "Il y a 2 mois",
       "rating": 5,
-      "text": "Réparation impeccable et conseils avisés. Je recommande le Centre Auto JCR sans hésiter.",
+      "text": "Un énorme merci à l'équipe JCR. Arrivés le matin pour des soucis de freins sur notre trafic, pris aussitôt par des pros, diagnostic et réparation en 2h. Vacances sauvées. Des personnes soigneuses et d'une grande gentillesse. Encore merci.",
+      "source": "Google",
+      "badge": "Avis vérifié"
+    },
+    {
+      "id": "rev-4",
+      "author": "Lucia Weis",
+      "date": "Il y a 3 mois",
+      "rating": 5,
+      "text": "Nous sommes un groupe de campeuses, et l'une d'entre nous avait un problème avec le support de son porte-vélos. Il l'a réparé avec patience et persévérance, et tout fonctionne parfaitement. Le prix était raisonnable, il était incroyablement sympathique, et le travail a été bien fait. Nous étions toutes les quatre ravies.",
       "source": "Google",
       "badge": "Avis vérifié"
     }

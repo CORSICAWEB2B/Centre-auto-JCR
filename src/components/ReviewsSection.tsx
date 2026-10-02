@@ -58,38 +58,38 @@ export const ReviewsSection: React.FC<ReviewsSectionProps> = ({ onNavigateAppoin
           {displayReviews.map((review, index) => (
             <div
               key={review.id || index}
-              className="w-[85vw] max-w-[340px] flex-shrink-0 snap-center md:w-auto md:max-w-none rounded-2xl sm:rounded-3xl bg-[#0f1117] border border-white/[0.08] p-5 sm:p-7 lg:p-8 flex flex-col justify-between hover:border-white/20 transition-all duration-200 shadow-lg"
+              className="w-[85vw] max-w-[340px] flex-shrink-0 snap-center md:w-auto md:max-w-none rounded-2xl sm:rounded-3xl bg-[#0f1117] border border-white/[0.08] p-5 sm:p-6 lg:p-7 flex flex-col hover:border-white/20 transition-all duration-200 shadow-lg"
             >
-              <div>
-                {/* 5 Stars */}
-                <div className="flex items-center gap-1 text-amber-400 text-sm mb-4 select-none">
-                  {'★'.repeat(review.rating || 5)}
-                </div>
-
-                {/* Review Quote */}
-                <p className="text-[14px] sm:text-[15.5px] text-white/80 font-light leading-relaxed mb-6">
-                  « {review.text} »
-                </p>
-              </div>
-
-              {/* Author Footer */}
-              <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-xs font-semibold select-none">
+              {/* 1. Zone Identité (En haut de la carte) */}
+              <div className="flex items-center justify-between gap-3 pb-3 border-b border-white/[0.06]">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 flex items-center justify-center text-white text-xs font-semibold select-none flex-shrink-0">
                     {review.author ? review.author.charAt(0) : 'C'}
                   </div>
-                  <div>
-                    <p className="text-[13px] sm:text-[14px] font-medium text-white leading-tight">
+                  <div className="min-w-0">
+                    <p className="text-[13.5px] sm:text-[14.5px] font-medium text-white leading-tight truncate">
                       {review.author}
                     </p>
-                    <span className="text-[11px] text-white/40">Client vérifié</span>
+                    <span className="text-[11px] text-white/40 block mt-0.5">
+                      Client vérifié
+                    </span>
                   </div>
                 </div>
 
-                <span className="text-[10.5px] sm:text-[11px] text-emerald-400/90 bg-emerald-400/10 px-2 py-0.5 rounded-full border border-emerald-400/20">
-                  {review.badge || 'Vérifié'}
+                <span className="text-[10px] sm:text-[11px] text-emerald-400/90 bg-emerald-400/10 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-emerald-400/20 flex-shrink-0 whitespace-nowrap">
+                  {review.badge || 'Avis vérifié'}
                 </span>
               </div>
+
+              {/* 2. Étoiles de notation */}
+              <div className="flex items-center gap-1 text-amber-400 text-sm pt-3 pb-2 select-none">
+                {'★'.repeat(review.rating || 5)}
+              </div>
+
+              {/* 3. Texte complet de l'avis */}
+              <p className="text-[13.5px] sm:text-[14.5px] text-white/80 font-light leading-relaxed whitespace-pre-line">
+                {review.text}
+              </p>
             </div>
           ))}
         </div>

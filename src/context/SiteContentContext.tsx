@@ -75,10 +75,10 @@ export const AUTHENTIC_REVIEWS: ReviewItem[] = [
   },
   {
     id: 'rev-3',
-    author: 'D Müller',
+    author: 'Anne Croizet',
     date: 'Il y a 2 mois',
     rating: 5,
-    text: "Nous étions en pleine préparation de nos vacances en Corse, mais mon porte-vélos en a décidé autrement. Mon feu arrière droit a cessé de fonctionner et les fils dénudés étaient un vrai fouillis.\n\nDans ce garage, nous avons bénéficié d'une assistance immédiate, aimable et efficace. Avec patience, expertise et une intuition quasi-détective, ils ont démêlé, testé et reconnecté les fils correctement. Finalement, tout a fonctionné à merveille ! Un service chaleureux, une aide compétente et une persévérance admirable. Grâce à ce garage, nous avons pu poursuivre nos vacances sans encombre et reprendre la route en toute sécurité. Je le recommande vivement ! Un grand merci ! :-)))",
+    text: "Un énorme merci à l'équipe JCR. Arrivés le matin pour des soucis de freins sur notre trafic, pris aussitôt par des pros, diagnostic et réparation en 2h. Vacances sauvées. Des personnes soigneuses et d'une grande gentillesse. Encore merci.",
     source: 'Google',
     badge: 'Avis vérifié',
   },
@@ -98,7 +98,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
   reviews: AUTHENTIC_REVIEWS,
 };
 
-const STORAGE_KEY = 'centre_auto_jcr_content_v2';
+const STORAGE_KEY = 'centre_auto_jcr_content_v3';
 
 interface SiteContentContextType {
   content: SiteContent;
@@ -115,9 +115,10 @@ const SiteContentContext = createContext<SiteContentContextType | undefined>(und
 
 export const SiteContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [content, setContent] = useState<SiteContent>(() => {
-    // Purge legacy storage from previous test deployments that might hold fake reviews
+    // Purge legacy storage from previous test deployments that might hold old reviews
     try {
       localStorage.removeItem('centre_auto_jcr_content_v1');
+      localStorage.removeItem('centre_auto_jcr_content_v2');
     } catch {
       // Ignore
     }
